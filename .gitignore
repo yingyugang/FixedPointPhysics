@@ -1,0 +1,10 @@
+Library/
+Temp/
+Logs/
+.vsconfig
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+Assembly-CSharp-firstpass.csproj
+FixedPointPhysics.sln
+.vs/FixedPointPhysics/v16/.suo
+obj/
