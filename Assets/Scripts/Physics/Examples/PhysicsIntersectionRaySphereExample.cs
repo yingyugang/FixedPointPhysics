@@ -20,7 +20,7 @@ namespace BlueNoah.PhysicsEngine
                 FixedPointCollision fixedPointRaycastHit;
                 this.origin = origin.ToVector3();
                 this.direction = direction;
-                if (FixedPointIntersection.IntersetionWithRayAndSphereFixedPointA(origin, new FixedPointVector3(direction),1000, sphere.fixedPointSphereCollider.fixedPointTransform.fixedPointPosition, sphere.fixedPointSphereCollider.radius , out fixedPointRaycastHit))
+                if (FixedPointIntersection.IntersetionWithRayAndSphereFixedPoint(origin, new FixedPointVector3(direction),1000, sphere.fixedPointSphereCollider.fixedPointTransform.fixedPointPosition, sphere.fixedPointSphereCollider.radius , out fixedPointRaycastHit))
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointRaycastHit.point.ToVector3();

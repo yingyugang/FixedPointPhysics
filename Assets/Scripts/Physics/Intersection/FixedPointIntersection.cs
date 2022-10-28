@@ -256,38 +256,7 @@ namespace BlueNoah.PhysicsEngine
             intersection = d * direct.normalized + point;
             return true;
         }
-        public static bool IntersectWithRayAndPlane(Vector3 point, Vector3 direct, Vector3 planeNormal, Vector3 planePoint, out Vector3 intersection)
-        {
-            intersection = Vector3.zero;
-            var denominator = Vector3.Dot(direct.normalized, planeNormal);
-            if (denominator == 0)
-            {
-                return false;
-            }
-            float d = Vector3.Dot(planePoint - point, planeNormal) / denominator;
-            if (d <= 0)
-            {
-                return false;
-            }
-            intersection = d * direct.normalized + point;
-            return true;
-        }
-        public static bool IntersectWithRayAndPlaneFixedPoint(FixedPointVector3 point, FixedPointVector3 direct, FixedPointVector3 planeNormal, FixedPointVector3 planePoint, out FixedPointVector3 intersection)
-        {
-            intersection = FixedPointVector3.zero;
-            var denominator = FixedPointVector3.Dot(direct.normalized, planeNormal);
-            if (denominator == 0)
-            {
-                return false;
-            }
-            var d = FixedPointVector3.Dot(planePoint - point, planeNormal) / denominator;
-            if (d <= 0)
-            {
-                return false;
-            }
-            intersection = d * direct.normalized + point;
-            return true;
-        }
+
         public static bool IntersectWithLineAndPlaneFixedPoint(FixedPointVector3 point, FixedPointVector3 direct, FixedPointVector3 planeNormal, FixedPointVector3 planePoint, out FixedPointVector3 intersection)
         {
             intersection = FixedPointVector3.zero;
@@ -344,48 +313,7 @@ namespace BlueNoah.PhysicsEngine
             Debug.Log(new Vector3(tmin.AsFloat(), tymin.AsFloat(), tzmin.AsFloat()));
             return true;
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static FixedPoint64 squared(FixedPoint64 v) { return v * v; }
-        public static bool IntersectWithAABBAndSphere(FixedPointVector3 min, FixedPointVector3 max, FixedPointVector3 center, FixedPoint64 radius)
-        {
-            FixedPoint64 dist_squared = radius * radius;
-            /* assume min and max are element-wise sorted, if not, do that now */
-            if (center.x < min.x) dist_squared -= squared(center.x - min.x);
-            else if (center.x > max.x) dist_squared -= squared(center.x - max.x);
-            if (center.y < min.y) dist_squared -= squared(center.y - min.y);
-            else if (center.y > max.y) dist_squared -= squared(center.y - max.y);
-            if (center.z < min.z) dist_squared -= squared(center.z - min.z);
-            else if (center.z > max.z) dist_squared -= squared(center.z - max.z);
-            return dist_squared > 0;
-        }
-        //https://subscription.packtpub.com/book/game-development/9781787123663/9/ch09lvl1sec82/sphere-to-aabb
-        //ClosestPoint between Point and AABB.
-        //GamePhysics
-        public static FixedPointVector3 ClosestPointWithAABBAndSphere(FixedPointVector3 point, FixedPointVector3 min, FixedPointVector3 max)
-        {
-            return ClosestPointWithPointAndAABB(point, min, max);
-        }
-        public static bool IntersectWithAABBAndAABBFixedPoint(FixedPointVector3 minA, FixedPointVector3 maxA, FixedPointVector3 minB, FixedPointVector3 maxB)
-        {
-            //Check for a separating axis.
-            /*
-            if (minA.x >= maxB.x) return false;
-            if (minA.y >= maxB.y) return false;
-            if (minA.z >= maxB.z) return false;
-            if (maxA.x <= minB.x) return false;
-            if (maxA.y <= minB.y) return false;
-            if (maxA.z <= minB.z) return false;
-            */
-            if (minA.x > maxB.x) return false;
-            if (minA.y > maxB.y) return false;
-            if (minA.z > maxB.z) return false;
-            if (maxA.x < minB.x) return false;
-            if (maxA.y < minB.y) return false;
-            if (maxA.z < minB.z) return false;
-            //Overlap on all three axis,so their 
-            // intersection must be non-empty
-            return true;
-        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPoint64 SqrDistanceToLine(FixedPointRay ray, FixedPointVector3 point)
         {

@@ -6,6 +6,38 @@ namespace BlueNoah.PhysicsEngine
 {
     public partial class FixedPointIntersection
     {
+        public static bool IntersectWithRayAndPlane(Vector3 point, Vector3 direct, Vector3 planeNormal, Vector3 planePoint, out Vector3 intersection)
+        {
+            intersection = Vector3.zero;
+            var denominator = Vector3.Dot(direct.normalized, planeNormal);
+            if (denominator == 0)
+            {
+                return false;
+            }
+            float d = Vector3.Dot(planePoint - point, planeNormal) / denominator;
+            if (d <= 0)
+            {
+                return false;
+            }
+            intersection = d * direct.normalized + point;
+            return true;
+        }
+        public static bool IntersectWithRayAndPlaneFixedPoint(FixedPointVector3 point, FixedPointVector3 direct, FixedPointVector3 planeNormal, FixedPointVector3 planePoint, out FixedPointVector3 intersection)
+        {
+            intersection = FixedPointVector3.zero;
+            var denominator = FixedPointVector3.Dot(direct.normalized, planeNormal);
+            if (denominator == 0)
+            {
+                return false;
+            }
+            var d = FixedPointVector3.Dot(planePoint - point, planeNormal) / denominator;
+            if (d <= 0)
+            {
+                return false;
+            }
+            intersection = d * direct.normalized + point;
+            return true;
+        }
         public static bool IntersectionWithRayAndAABBFixedPointA(FixedPointVector3 origin,//origin of the ray
             FixedPointVector3 direct,//length and direction of the ray
             FixedPointVector3 min,
@@ -20,7 +52,7 @@ namespace BlueNoah.PhysicsEngine
             t[3] = (max.y - origin.y) / direct.y;
             t[4] = (min.z - origin.z) / direct.z;
             t[5] = (max.z - origin.z) / direct.z;
-            var tmin = FixedPointMath.Max( FixedPointMath.Max(FixedPointMath.Min(t[0], t[1]), FixedPointMath.Min(t[2], t[3])), FixedPointMath.Min(t[4], t[5]));
+            var tmin = FixedPointMath.Max(FixedPointMath.Max(FixedPointMath.Min(t[0], t[1]), FixedPointMath.Min(t[2], t[3])), FixedPointMath.Min(t[4], t[5]));
             var tmax = FixedPointMath.Min(FixedPointMath.Min(FixedPointMath.Max(t[0], t[1]), FixedPointMath.Max(t[2], t[3])), FixedPointMath.Max(t[4], t[5]));
 
             if (tmax < 0)
@@ -183,9 +215,96 @@ namespace BlueNoah.PhysicsEngine
             intersection = origin + delta * t;
             return t;
         }
+        public static FixedPoint64 IntersectionWithRayAndOBBFixedPoint(
+              FixedPointVector3 origin,
+              FixedPointVector3 direct,
+              FixedPoint64 length,
+              FixedPointVector3 position,
+              FixedPointVector3 halfSize,
+              FixedPointMatrix orientation,
+              out FixedPointCollision intersection)
+        {
+            var t = IntersectionWithRayAndOBBFixedPoint(origin, direct, position, halfSize, orientation, out intersection);
+            if (intersection.hit && intersection.t <= length)
+            {
+                return t;
+            }
+            return -1;
+        }
+
+        //GamePhysics Cookbook Chapter10
+        public static FixedPoint64 IntersectionWithRayAndOBBFixedPoint(
+            FixedPointVector3 origin,
+            FixedPointVector3 direct,
+            FixedPointVector3 position,
+            FixedPointVector3 halfSize,
+            FixedPointMatrix orientation,
+            out FixedPointCollision intersection)
+        {
+            intersection = new FixedPointCollision();
+            var axisX = new FixedPointVector3(orientation.M11, orientation.M12, orientation.M13);
+            var axisY = new FixedPointVector3(orientation.M21, orientation.M22, orientation.M23);
+            var axisZ = new FixedPointVector3(orientation.M31, orientation.M32, orientation.M33);
+            var p = position - origin;
+            var f = new FixedPointVector3(FixedPointVector3.Dot(axisX, direct), FixedPointVector3.Dot(axisY, direct), FixedPointVector3.Dot(axisZ, direct));
+            var e = new FixedPointVector3(FixedPointVector3.Dot(axisX, p), FixedPointVector3.Dot(axisY, p), FixedPointVector3.Dot(axisZ, p));
+            FixedPoint64[] t = { 0, 0, 0, 0, 0,0 };
+            if (f.x == 0)
+            {
+                if (-e.x - halfSize.x > 0 || -e.x + halfSize.x < 0)
+                {
+                    return -1;
+                }
+                f.x = 0.00001;
+            }
+            t[0] = (e.x + halfSize.x) / f.x;
+            t[1] = (e.x - halfSize.x) / f.x;
+
+            if (f.y == 0)
+            {
+                if (-e.y - halfSize.y > 0 || -e.y + halfSize.y < 0)
+                {
+                    return -1;
+                }
+                f.y = 0.00001;
+            }
+            t[2] = (e.y + halfSize.y) / f.y;
+            t[3] = (e.y - halfSize.y) / f.y;
+            if (f.z == 0)
+            {
+                if (-e.z - halfSize.z > 0 || -e.z + halfSize.z < 0)
+                {
+                    return -1;
+                }
+                f.z = 0.00001;
+            }
+            t[4] = (e.z + halfSize.z) / f.z;
+            t[5] = (e.z - halfSize.z) / f.z;
+            var tmin = FixedPointMath.Max(FixedPointMath.Max(FixedPointMath.Min(t[0],t[1]), FixedPointMath.Min(t[2], t[3])), FixedPointMath.Min(t[4], t[5]));
+            var tmax = FixedPointMath.Min(FixedPointMath.Min(FixedPointMath.Max(t[0], t[1]), FixedPointMath.Max(t[2], t[3])), FixedPointMath.Max(t[4], t[5]));
+            if (tmax < 0)
+            {
+                return -1;
+            }
+            if (tmin > tmax)
+            {
+                return -1;
+            }
+            if (tmin < 0)
+            {
+                intersection.point = origin + direct * tmax;
+                intersection.t = tmax;
+                intersection.hit = true;
+                return tmax;
+            }
+            intersection.point = origin + direct * tmin;
+            intersection.t = tmin;
+            intersection.hit = true;
+            return tmin;
+        }
 
         //GamePhysics Cookbook Capter14
-        public static bool IntersetionWithRayAndSphereFixedPointA(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, FixedPointVector3 center, FixedPoint64 radius, out FixedPointCollision intersection)
+        public static bool IntersetionWithRayAndSphereFixedPoint(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, FixedPointVector3 center, FixedPoint64 radius, out FixedPointCollision intersection)
         {
             intersection = new FixedPointCollision();
             var e = center - origin;
@@ -227,7 +346,7 @@ namespace BlueNoah.PhysicsEngine
         //reference 3D Math Primer for Graphics and Game Development A.12
         //reference www.realtimerendering.com/intersection.com
         //direct must be normalized.
-        [Obsolete("User IntersectionWithRayAndSphereFixedPointA")]
+        [Obsolete("Use another IntersectionWithRayAndSphereFixedPoint")]
         public static bool IntersectionWithRayAndSphereFixedPoint(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, FixedPointVector3 center, FixedPoint64 radius, out FixedPointVector3 intersection)
         {
             intersection = FixedPointVector3.zero;
@@ -252,7 +371,7 @@ namespace BlueNoah.PhysicsEngine
             intersection = origin + direct * distanceT;
             return true;
         }
-        [Obsolete("User IntersectionWithRayAndSphereFixedPointA")]
+        [Obsolete("Use another IntersectionWithRayAndSphereFixedPoint")]
         public static bool IntersectionWithRayAndSphereFixedPoint(FixedPointVector3 origin, FixedPointVector3 direct, FixedPointVector3 center, FixedPoint64 radius)
         {
             var sqrRadius = radius * radius;

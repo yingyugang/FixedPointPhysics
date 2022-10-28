@@ -18,7 +18,7 @@ namespace BlueNoah.PhysicsEngine
             }
         }
         public FixedPointVector3 halfSize { get; private set; }
-
+        //Restrict none param construction
         private FixedPointOBBCollider() { }
 
         public FixedPointOBBCollider(FixedPointTransform transform)
@@ -26,6 +26,7 @@ namespace BlueNoah.PhysicsEngine
             fixedPointTransform = transform;
             min = fixedPointTransform.fixedPointPosition - halfSize;
             max = fixedPointTransform.fixedPointPosition + halfSize;
+            orientation = FixedPointMatrix.CreateFromYawPitchRoll(0,0,0);
             colliderType = ColliderType.OBB;
         }
         public FixedPointOBBCollider(FixedPointTransform transform, FixedPointVector3 size, FixedPointMatrix orientation)
@@ -36,13 +37,13 @@ namespace BlueNoah.PhysicsEngine
             min = fixedPointTransform.fixedPointPosition - halfSize;
             max = fixedPointTransform.fixedPointPosition + halfSize;
             this.orientation = orientation;
+            colliderType = ColliderType.OBB;
         }
         public override void UpdateCollider()
         {
             if (FixedPointPhysicsPresenter.Instance.fixedPointOctree != null)
             {
                 FixedPointPhysicsPresenter.Instance.fixedPointOctree.UpdateCollider(this);
-                //TODO
                 min = fixedPointTransform.fixedPointPosition - halfSize;
                 max = fixedPointTransform.fixedPointPosition + halfSize;
             }

@@ -25,10 +25,13 @@ namespace BlueNoah.PhysicsEngine
                 hit.point = closestPoint;
                 if (closestPoint == point)
                 {
-                    hit.normal = (point - (min + (max - min) / 2)).normalized;
                     if (hit.normal == FixedPointVector3.zero)
                     {
                         hit.normal = FixedPointVector3.up;
+                    }
+                    else
+                    {
+                        hit.normal = (point - (min + (max - min) / 2)).normalized;
                     }
                 }
                 else
@@ -38,6 +41,39 @@ namespace BlueNoah.PhysicsEngine
             }
             return hit;
         }
+
+        public static FixedPointCollision HitWithSphereAndOBB(FixedPointVector3 point, FixedPoint64 radius, FixedPointVector3 position, FixedPointVector3 halfSize,FixedPointMatrix orientation)
+        {
+            var hit = new FixedPointCollision();
+            var closestPoint = ClosestPointWithPointAndOBB(point, position, halfSize, orientation);
+            if ((closestPoint - point).sqrMagnitude > radius * radius)
+            {
+                hit.hit = false;
+                return hit;
+            }
+            else
+            {
+                hit.hit = true;
+                hit.point = closestPoint;
+                if (closestPoint == point)
+                {
+                    if (hit.normal == FixedPointVector3.zero)
+                    {
+                        hit.normal = FixedPointVector3.up;
+                    }
+                    else
+                    {
+                        hit.normal = (point - position).normalized;
+                    }
+                }
+                else
+                {
+                    hit.normal = (point - closestPoint).normalized;
+                }
+            }
+            return hit;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPointCollision HitWithSphereAndSphere(FixedPointVector3 point, FixedPoint64 radius, FixedPointVector3 target, FixedPoint64 targetRadius)
         {

@@ -95,6 +95,18 @@ namespace BlueNoah.PhysicsEngine
                             }
                         }
                         break;
+                    case ColliderType.OBB:
+                        {
+                            var obb = (FixedPointOBBCollider)item;
+                            var hit = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, obb.halfSize,obb.orientation);
+                            if (hit.hit)
+                            {
+                                hitGo.SetActive(true);
+                                hitGo.transform.position = hit.point.ToVector3();
+                                hitGo.transform.forward = hit.normal.ToVector3();
+                            }
+                        }
+                        break;
                 }
                
             }
