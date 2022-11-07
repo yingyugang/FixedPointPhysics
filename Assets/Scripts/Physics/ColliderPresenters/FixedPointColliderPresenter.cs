@@ -5,11 +5,13 @@ namespace BlueNoah.PhysicsEngine
     {
         public ColliderType colliderType { get; protected set; }
         public FixedPointCollider fixedPointCollider { get; protected set; }
-
         [SerializeField]
         protected bool isTrigger;
         [SerializeField]
         protected int layer;
+        [SerializeField]
+        protected Vector3Int positionInt;
+
         private void OnDisable()
         {
             if(fixedPointCollider != null)

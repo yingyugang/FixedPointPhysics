@@ -1,4 +1,5 @@
 using BlueNoah.Math.FixedPoint;
+using System.Collections;
 using UnityEngine;
 namespace BlueNoah.PhysicsEngine
 {
@@ -27,10 +28,24 @@ namespace BlueNoah.PhysicsEngine
                 if (FixedPointPhysicsPresenter.Raycast(origin,new FixedPointVector3(direction) , 10000, out fixedPointRaycastHit, 0)) {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointRaycastHit.point.ToVector3();
+                    StartCoroutine(_Destroy(go, fixedPointRaycastHit.normal.ToVector3()));
                 }
                 this.origin = origin.ToVector3();
                 this.direction = direction;
             }
+        }
+
+        IEnumerator _Destroy(GameObject go, Vector3 normal)
+        {
+            yield return new WaitForSeconds(0.2f);
+            float t = 0;
+            while (t < 0.5f)
+            {
+                t += Time.deltaTime;
+                go.transform.position += Time.deltaTime * normal * 20;
+                yield return null;
+            }
+            Destroy(go);
         }
 
         private void OnDrawGizmos()

@@ -28,7 +28,39 @@ namespace BlueNoah.PhysicsEngine
                 }
             }
         }
-        public FixedPointVector3 fixedPointEulerAngles { get; set; }
+        bool isMatrixDirty;
+        FixedPointMatrix _fixedPointMatrix;
+        public FixedPointMatrix fixedPointMatrix { 
+            get {
+                if (isMatrixDirty)
+                {
+                    _fixedPointMatrix = FixedPointMatrix.CreateFromYawPitchRoll(_fixedPointEulerAngles.y, _fixedPointEulerAngles.x, _fixedPointEulerAngles.z);
+                    isMatrixDirty = false;
+                }
+                return _fixedPointMatrix;
+            }
+            set {
+                _fixedPointMatrix = value;
+                isEulerAnglesDirty = true;
+                _fixedPointEulerAngles = _fixedPointMatrix.eulerAngles;
+            } 
+        }
+        bool isEulerAnglesDirty;
+        FixedPointVector3 _fixedPointEulerAngles;
+        public FixedPointVector3 fixedPointEulerAngles { 
+            get {
+                if (isEulerAnglesDirty)
+                {
+                    _fixedPointEulerAngles = _fixedPointMatrix.eulerAngles;
+                    isEulerAnglesDirty = false;
+                }
+                return _fixedPointEulerAngles;
+            }
+            set { 
+                _fixedPointEulerAngles = value;
+                isMatrixDirty = true;
+            }
+        }
         public FixedPointVector3 fixedPointForward { 
             get
             {

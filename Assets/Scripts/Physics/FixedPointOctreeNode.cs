@@ -24,6 +24,7 @@ namespace BlueNoah.PhysicsEngine
         //public FastList<FixedPointAABBCollider> intersectedAABBColliders = new FastList<FixedPointAABBCollider>();
         public HashSet<FixedPointSphereCollider> intersectedSphereColliders = new HashSet<FixedPointSphereCollider>();
         public HashSet<FixedPointOBBCollider> intersectedOBBColliders = new HashSet<FixedPointOBBCollider>();
+        public HashSet<FixedPointTriangleCollider> intersectedTriangleColliders = new HashSet<FixedPointTriangleCollider>();
 
         public FixedPointAABB fixedPointAABB;
 

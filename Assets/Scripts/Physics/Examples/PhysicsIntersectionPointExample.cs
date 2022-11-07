@@ -32,7 +32,7 @@ namespace BlueNoah.PhysicsEngine
             {
                 result.text = "Intersection : true";
             }
-            if (FixedPointIntersection.PointInOBB(pos, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointPosition, obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.orientation))
+            if (FixedPointIntersection.PointInOBB(pos, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointPosition, obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointMatrix))
             {
                 result.text = "Intersection : true";
             }
@@ -41,7 +41,7 @@ namespace BlueNoah.PhysicsEngine
                 result.text = "Intersection : true";
             }
             closest.transform.position = FixedPointIntersection.ClosestPointWithPointAndAABB(pos, aabb.fixedPointAABBCollider.min, aabb.fixedPointAABBCollider.max).ToVector3();
-            closest1.transform.position = FixedPointIntersection.ClosestPointWithPointAndOBB(pos, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointPosition, obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.orientation).ToVector3();
+            closest1.transform.position = FixedPointIntersection.ClosestPointWithPointAndOBB(pos, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointPosition, obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointMatrix).ToVector3();
             closest2.transform.position = FixedPointIntersection.ClosestPointWithPointAndSphere(pos, sphere.fixedPointSphereCollider.fixedPointTransform.fixedPointPosition, sphere.fixedPointSphereCollider.radius).ToVector3();
         }
     }

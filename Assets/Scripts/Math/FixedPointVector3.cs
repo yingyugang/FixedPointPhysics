@@ -183,6 +183,13 @@ namespace BlueNoah.Math.FixedPoint
             z = vector3.z;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public FixedPointVector3(Vector3Int vector3)
+        {
+            x = vector3.x;
+            y = vector3.y;
+            z = vector3.z;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public FixedPointVector3(FixedPoint64 x, FixedPoint64 y, FixedPoint64 z)
         {
             this.x = x;
@@ -893,6 +900,11 @@ namespace BlueNoah.Math.FixedPoint
         public Vector3 ToVector3()
         {
             return new Vector3(x.AsFloat(), y.AsFloat(), z.AsFloat());
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector3Int ToVector3Int()
+        {
+            return new Vector3Int(x.AsInt(), y.AsInt(), z.AsInt());
         }
     }
 }

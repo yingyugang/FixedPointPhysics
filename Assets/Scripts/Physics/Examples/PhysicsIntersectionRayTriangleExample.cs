@@ -2,11 +2,11 @@ using BlueNoah.Math.FixedPoint;
 using UnityEngine;
 namespace BlueNoah.PhysicsEngine
 {
-    public class PhysicsIntersectionRayOBBExample : MonoBehaviour
+    public class PhysicsIntersectionRayTriangleExample : MonoBehaviour
     {
         Vector3 origin;
         Vector3 direction;
-        public FixedPointOBBColliderPresenter obb;
+        public FixedPointTriangleColliderPresenter triangleCollider;
 
         void Update()
         {
@@ -18,14 +18,14 @@ namespace BlueNoah.PhysicsEngine
                 Vector3 position = Camera.main.ScreenToWorldPoint(mousePosition);
                 var direction = (position - Camera.main.transform.position).normalized;
                 FixedPointCollision fixedPointRaycastHit;
-                if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(origin, new FixedPointVector3(direction), obb.fixedPointOBBCollider.fixedPointTransform.fixedPointPosition,  obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointMatrix, out fixedPointRaycastHit) > 0)
+                this.origin = origin.ToVector3();
+                this.direction = direction;
+                if (FixedPointIntersection.IntersectWithRayAndTriangleFixedPoint(origin, new FixedPointVector3(direction), triangleCollider.fixedPointTriangleCollider, out fixedPointRaycastHit))
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointRaycastHit.point.ToVector3();
                     Destroy(go, 3);
                 }
-                this.origin = origin.ToVector3();
-                this.direction = direction;
             }
         }
 

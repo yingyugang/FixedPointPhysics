@@ -98,7 +98,7 @@ namespace BlueNoah.PhysicsEngine
                     case ColliderType.OBB:
                         {
                             var obb = (FixedPointOBBCollider)item;
-                            var hit = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, obb.halfSize,obb.orientation);
+                            var hit = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, obb.halfSize,obb.fixedPointTransform.fixedPointMatrix);
                             if (hit.hit)
                             {
                                 hitGo.SetActive(true);

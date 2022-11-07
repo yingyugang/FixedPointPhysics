@@ -24,6 +24,7 @@ namespace BlueNoah.PhysicsEngine
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointRaycastHit.point.ToVector3();
+                    Destroy(go,3);
                 }
             }
         }

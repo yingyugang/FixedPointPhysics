@@ -23,6 +23,7 @@ namespace BlueNoah.PhysicsEngine
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointRaycastHit.point.ToVector3();
+                    Destroy(go, 3);
                 }
 
                 FixedPointVector3 fixedPointVector3;
@@ -31,6 +32,7 @@ namespace BlueNoah.PhysicsEngine
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointVector3.ToVector3();
+                    Destroy(go, 3);
                 }
 
                 this.origin = origin.ToVector3();

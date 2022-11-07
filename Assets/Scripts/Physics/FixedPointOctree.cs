@@ -171,7 +171,7 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         item.castIndex = castIndex;
-                        if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir ,length, item.fixedPointTransform.fixedPointPosition, item.halfSize,item.orientation, out fixedPointCollision) > 0)
+                        if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir ,length, item.fixedPointTransform.fixedPointPosition, item.halfSize,item.fixedPointTransform.fixedPointMatrix, out fixedPointCollision) > 0)
                         {
                             colliders.Add(item);
                         }
@@ -195,6 +195,7 @@ namespace BlueNoah.PhysicsEngine
             FixedPointCollider collider = null;
             fixedPointRaycastHit = null;
             var intersection = FixedPointVector3.zero;
+            var normal = FixedPointVector3.zero;
             FixedPointVector3 currentIntersection;
             FixedPointCollision fixedPointCollision;
             FixedPoint64 currentDistance;
@@ -237,6 +238,7 @@ namespace BlueNoah.PhysicsEngine
                             {
                                 sqrDistance = currentDistance;
                                 intersection = fixedPointCollision.point;
+                                normal = fixedPointCollision.normal;
                                 collider = item;
                             }
                         }
@@ -267,6 +269,7 @@ namespace BlueNoah.PhysicsEngine
                             {
                                 sqrDistance = currentDistance;
                                 intersection = currentIntersection;
+                                //TODO get normal.
                                 collider = item;
                             }
                         }
@@ -291,13 +294,45 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         item.castIndex = castIndex;
-                        if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir, length, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.orientation, out fixedPointCollision) > 0)
+                        if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir, length, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.fixedPointTransform.fixedPointMatrix, out fixedPointCollision) > 0)
                         {
                             currentDistance = (fixedPointCollision.point - origin).sqrMagnitude;
                             if (currentDistance < sqrDistance)
                             {
                                 sqrDistance = currentDistance;
                                 intersection = fixedPointCollision.point;
+                                normal = fixedPointCollision.normal;
+                                collider = item;
+                            }
+                        }
+                    }
+                    foreach (var item in node.intersectedTriangleColliders)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
+                        {
+                            continue;
+                        }
+                        if (item.castIndex == castIndex)
+                        {
+                            continue;
+                        }
+                        item.castIndex = castIndex;
+                        if (FixedPointIntersection.IntersectWithRayAndTriangleFixedPoint(fixedPointRay.Point, fixedPointRay.Dir, item,  out fixedPointCollision))
+                        {
+                            currentDistance = (fixedPointCollision.point - origin).sqrMagnitude;
+                            if (currentDistance < sqrDistance)
+                            {
+                                sqrDistance = currentDistance;
+                                intersection = fixedPointCollision.point;
+                                normal = fixedPointCollision.normal;
                                 collider = item;
                             }
                         }
@@ -314,7 +349,7 @@ namespace BlueNoah.PhysicsEngine
             }
             if (collider!=null)
             {
-                fixedPointRaycastHit = new FixedPointRaycastHit(collider,intersection);
+                fixedPointRaycastHit = new FixedPointRaycastHit(collider,intersection, normal);
                 return true;
             }else
             {
@@ -327,6 +362,7 @@ namespace BlueNoah.PhysicsEngine
             var fixedPointRay = new FixedPointRay(origin, direct);
             int count = 0;
             FixedPointVector3 currentIntersection;
+            FixedPointVector3 normal;
             FixedPointCollision fixedPointCollision;
             openList.AddRange(root.nodes);
             castIndex++;
@@ -361,7 +397,7 @@ namespace BlueNoah.PhysicsEngine
                         item.castIndex = castIndex;
                         if (FixedPointIntersection.IntersetionWithRayAndSphereFixedPoint(origin, direct, length, item.fixedPointTransform.fixedPointPosition, item.radius, out fixedPointCollision))
                         {
-                            fixedPointRaycastHit[count] = new FixedPointRaycastHit(item, fixedPointCollision.point);
+                            fixedPointRaycastHit[count] = new FixedPointRaycastHit(item, fixedPointCollision.point,fixedPointCollision.normal);
                             count++;
                         }
                     }
@@ -386,7 +422,8 @@ namespace BlueNoah.PhysicsEngine
                         item.castIndex = castIndex;
                         if (FixedPointIntersection.IntersectionWithRayAndAABBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir * length, item.min, item.max, out currentIntersection) != FixedPoint64.MaxValue)
                         {
-                            fixedPointRaycastHit[count] = new FixedPointRaycastHit(item, currentIntersection);
+                            //TODO normal
+                            fixedPointRaycastHit[count] = new FixedPointRaycastHit(item, currentIntersection,FixedPointVector3.zero);
                             count++;
                         }
                     }
@@ -409,9 +446,9 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         item.castIndex = castIndex;
-                        if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir, length, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.orientation, out fixedPointCollision) > 0)
+                        if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(fixedPointRay.Point, fixedPointRay.Dir, length, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.fixedPointTransform.fixedPointMatrix, out fixedPointCollision) > 0)
                         {
-                            fixedPointRaycastHit[count] = new FixedPointRaycastHit(item, fixedPointCollision.point);
+                            fixedPointRaycastHit[count] = new FixedPointRaycastHit(item, fixedPointCollision.point, fixedPointCollision.normal);
                             count++;
                         }
                     }
@@ -508,7 +545,6 @@ namespace BlueNoah.PhysicsEngine
                             colliders.Add(item);
                         }
                     }
-
                     foreach (var item in node.intersectedOBBColliders)
                     {
                         if (item == null)
@@ -528,12 +564,38 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         item.castIndex = castIndex;
-                        fixedPointCollision = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.orientation);
+                        fixedPointCollision = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.fixedPointTransform.fixedPointMatrix);
                         if (fixedPointCollision.hit)
                         {
                             colliders.Add(item);
                         }
                     }
+                    /*
+                    foreach (var item in node.intersectedTriangleColliders)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
+                        {
+                            continue;
+                        }
+                        if (item.castIndex == castIndex)
+                        {
+                            continue;
+                        }
+                        item.castIndex = castIndex;
+                        fixedPointCollision = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, item.halfSize, item.fixedPointTransform.fixedPointMatrix);
+                        if (fixedPointCollision.hit)
+                        {
+                            colliders.Add(item);
+                        }
+                    }*/
                     continue;
                 }
                 for (int i = 0; i < node.nodes.Length; i++)
@@ -951,6 +1013,33 @@ namespace BlueNoah.PhysicsEngine
                 for (int i = 0; i < node.nodes.Length; i++)
                 {
                     if (FixedPointIntersection.IntersectWithAABBAndOBBFixedPoint(node.nodes[i].min, node.nodes[i].max, fixedPointOBBCollider))
+                    {
+                        openList.Add(node.nodes[i]);
+                    }
+                }
+            }
+        }
+        public void UpdateCollider(FixedPointTriangleCollider fixedPointTriangleCollider)
+        {
+            foreach (var item in fixedPointTriangleCollider.impactNodes)
+            {
+                item.intersectedTriangleColliders.Remove(fixedPointTriangleCollider);
+            }
+            fixedPointTriangleCollider.impactNodes.Clear();
+            openList.AddRange(root.nodes);
+            while (openList.Count > openListIndex)
+            {
+                var node = openList[openListIndex];
+                openListIndex++;
+                if (node.nodes == null || node.nodes.Length <= 0)
+                {
+                    node.intersectedTriangleColliders.Add(fixedPointTriangleCollider);
+                    fixedPointTriangleCollider.impactNodes.Add(node);
+                    continue;
+                }
+                for (int i = 0; i < node.nodes.Length; i++)
+                {
+                    if (FixedPointIntersection.IntersectWithAABBAndAABBFixedPoint(node.nodes[i].min, node.nodes[i].max, fixedPointTriangleCollider.min, fixedPointTriangleCollider.max))
                     {
                         openList.Add(node.nodes[i]);
                     }

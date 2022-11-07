@@ -15,8 +15,6 @@ namespace BlueNoah.PhysicsEngine
         bool useRigidbody;
         [SerializeField]
         int radiusInt;
-        [SerializeField]
-        Vector3Int positionInt;
 
 
         FixedPointTransform fixedPointTransform;

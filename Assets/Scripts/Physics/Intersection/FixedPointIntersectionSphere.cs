@@ -94,5 +94,11 @@ namespace BlueNoah.PhysicsEngine
             }
             return hit;
         }
+
+        public static FixedPointCollision HitWithSphereAndTriangle(FixedPointVector3 point, FixedPoint64 radius, FixedPointTriangleCollider triangle)
+        {
+            return HitWithTriangleAndSphere(point, radius, triangle);
+        }
+
     }
 }

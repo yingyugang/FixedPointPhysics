@@ -54,9 +54,9 @@ namespace BlueNoah.PhysicsEngine
             test[0] = new FixedPointVector3(1, 0, 0);
             test[1] = new FixedPointVector3(0, 1, 0);
             test[2] = new FixedPointVector3(0, 0, 1);
-            test[3] = new FixedPointVector3(obb.orientation.M11, obb.orientation.M12, obb.orientation.M13);
-            test[4] = new FixedPointVector3(obb.orientation.M21, obb.orientation.M22, obb.orientation.M23);
-            test[5] = new FixedPointVector3(obb.orientation.M31, obb.orientation.M32, obb.orientation.M33);
+            test[3] = new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M11, obb.fixedPointTransform.fixedPointMatrix.M12, obb.fixedPointTransform.fixedPointMatrix.M13);
+            test[4] = new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M21, obb.fixedPointTransform.fixedPointMatrix.M22, obb.fixedPointTransform.fixedPointMatrix.M23);
+            test[5] = new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M31, obb.fixedPointTransform.fixedPointMatrix.M32, obb.fixedPointTransform.fixedPointMatrix.M33);
        
             for (int i = 0; i < 3; ++i)
             {
@@ -104,9 +104,9 @@ namespace BlueNoah.PhysicsEngine
             var c = obb.fixedPointTransform.fixedPointPosition;
             var e = obb.halfSize;
             var a = new FixedPointVector3[] { 
-                new FixedPointVector3(obb.orientation.M11, obb.orientation.M12, obb.orientation.M13), 
-                new FixedPointVector3(obb.orientation.M21, obb.orientation.M22, obb.orientation.M23), 
-                new FixedPointVector3(obb.orientation.M31, obb.orientation.M32, obb.orientation.M33) 
+                new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M11, obb.fixedPointTransform.fixedPointMatrix.M12, obb.fixedPointTransform.fixedPointMatrix.M13), 
+                new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M21, obb.fixedPointTransform.fixedPointMatrix.M22, obb.fixedPointTransform.fixedPointMatrix.M23), 
+                new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M31, obb.fixedPointTransform.fixedPointMatrix.M32, obb.fixedPointTransform.fixedPointMatrix.M33) 
             };
             vertex[0] = c + a[0] * e.x + a[1] * e.y + a[2] * e.z;
             vertex[1] = c - a[0] * e.x + a[1] * e.y + a[2] * e.z;

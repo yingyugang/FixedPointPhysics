@@ -9,8 +9,6 @@ namespace BlueNoah.PhysicsEngine
         public FixedPointAABBCollider fixedPointAABBCollider { get; private set; }
         [SerializeField]
         Vector3Int sizeInt;
-        [SerializeField]
-        Vector3Int positionInt;
 
         private void Awake()
         {

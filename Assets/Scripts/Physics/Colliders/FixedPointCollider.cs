@@ -8,7 +8,8 @@ namespace BlueNoah.PhysicsEngine
     {
         Sphere,
         AABB,
-        OBB
+        OBB,
+        Triangle
     }
     public abstract class FixedPointCollider : FastListItem
     {

@@ -22,6 +22,7 @@ namespace BlueNoah.PhysicsEngine
             intersection = d * direct.normalized + point;
             return true;
         }
+        /*
         public static bool IntersectWithRayAndPlaneFixedPoint(FixedPointVector3 point, FixedPointVector3 direct, FixedPointVector3 planeNormal, FixedPointVector3 planePoint, out FixedPointVector3 intersection)
         {
             intersection = FixedPointVector3.zero;
@@ -37,7 +38,66 @@ namespace BlueNoah.PhysicsEngine
             }
             intersection = d * direct.normalized + point;
             return true;
+        }*/
+        //Physics Cookbook Chapter10
+        public static bool IntersectWithRayAndPlaneFixedPoint(FixedPointVector3 point, FixedPointVector3 direct, FixedPoint64 planeDistance, FixedPointVector3 planeNormal, out FixedPointCollision intersection)
+        {
+            intersection = new FixedPointCollision();
+            var nd = FixedPointVector3.Dot(direct,planeNormal);
+            var pn = FixedPointVector3.Dot(point,planeNormal);
+            if (nd >= 0)
+            {
+                return false;
+            }
+            var t = (planeDistance - pn) / nd;
+            if (t >= 0)
+            {
+                intersection.hit = true;
+                intersection.normal = planeNormal;
+                intersection.point = point + direct * t;
+                return true;
+            }
+            return false;
         }
+        //Physics Cookbook Chapter11
+        //1.Create a plane from the three points of the triangle
+        //2.Raycast against the plane.
+        //3.Check if the raycast result inside the triangle.
+        public static bool IntersectWithRayAndTriangleFixedPoint(FixedPointVector3 point, FixedPointVector3 direct,FixedPointTriangleCollider triangle, out FixedPointCollision intersection) {
+            var plane = FromTriangle(triangle);
+            if (IntersectWithRayAndPlaneFixedPoint(point, direct, plane.distance, plane.normal,out intersection))
+            {
+                var hitPoint = intersection.point;
+                var barycentric = Barycentric(hitPoint,triangle);
+                if (barycentric.x >= 0 && barycentric.x <= 1 && barycentric.y >= 0 && barycentric.y <= 1 && barycentric.z >= 0 && barycentric.z <= 1)
+                {
+                    return true;
+                }
+            }
+            intersection = new FixedPointCollision();
+            return false;
+        }
+
+        static FixedPointVector3 Barycentric(FixedPointVector3 point,FixedPointTriangleCollider triangle)
+        {
+            point = point - triangle.fixedPointTransform.fixedPointPosition;
+            var ap = point - triangle.a;
+            var bp = point - triangle.b;
+            var cp = point - triangle.c;
+            var ab = triangle.b - triangle.a;
+            var ac = triangle.c - triangle.a;
+            var bc = triangle.c - triangle.b;
+            var cb = triangle.b - triangle.c;
+            var ca = triangle.a - triangle.c;
+            var v = ab - FixedPointVector3.Project(ab, cb.normalized);
+            var a = 1 - FixedPointVector3.Dot(v, ap) / FixedPointVector3.Dot(v,ab);
+            v = bc - FixedPointVector3.Project(bc,ac.normalized);
+            var b = 1 - FixedPointVector3.Dot(v, bp) / FixedPointVector3.Dot(v,bc);
+            v = ca - FixedPointVector3.Project(ca,ab.normalized);
+            var c = 1 - FixedPointVector3.Dot(v, cp) / FixedPointVector3.Dot(v,ca);
+            return new FixedPointVector3(a,b,c);
+        }
+        
         public static bool IntersectionWithRayAndAABBFixedPointA(FixedPointVector3 origin,//origin of the ray
             FixedPointVector3 direct,//length and direction of the ray
             FixedPointVector3 min,

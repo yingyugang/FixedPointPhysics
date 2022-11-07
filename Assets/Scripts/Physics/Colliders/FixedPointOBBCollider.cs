@@ -4,7 +4,6 @@ namespace BlueNoah.PhysicsEngine
     public class FixedPointOBBCollider : FixedPointCollider
     {
         FixedPointVector3 _size;
-        public FixedPointMatrix orientation;
         public FixedPointVector3 size
         {
             get
@@ -26,17 +25,15 @@ namespace BlueNoah.PhysicsEngine
             fixedPointTransform = transform;
             min = fixedPointTransform.fixedPointPosition - halfSize;
             max = fixedPointTransform.fixedPointPosition + halfSize;
-            orientation = FixedPointMatrix.CreateFromYawPitchRoll(0,0,0);
             colliderType = ColliderType.OBB;
         }
-        public FixedPointOBBCollider(FixedPointTransform transform, FixedPointVector3 size, FixedPointMatrix orientation)
+        public FixedPointOBBCollider(FixedPointTransform transform, FixedPointVector3 size)
         {
             fixedPointTransform = transform;
             this.size = size;
             halfSize = size / 2;
             min = fixedPointTransform.fixedPointPosition - halfSize;
             max = fixedPointTransform.fixedPointPosition + halfSize;
-            this.orientation = orientation;
             colliderType = ColliderType.OBB;
         }
         public override void UpdateCollider()

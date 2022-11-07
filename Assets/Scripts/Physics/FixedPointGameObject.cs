@@ -8,5 +8,7 @@ namespace BlueNoah.PhysicsEngine
         protected abstract void OnTransfered();
         public abstract void OnViewUpdate();
         public abstract void DrawGizmosSelected();
+        public abstract void OnLogicUpdate();
+        public int indexInActorList { get;  set; }
     }
 }
