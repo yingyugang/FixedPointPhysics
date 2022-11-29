@@ -86,7 +86,7 @@ namespace BlueNoah.PhysicsEngine
             return collider;
         }
 
-        public List<FixedPointCollider> RaycastAll(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, int layerMask)
+        public List<FixedPointCollider> RaycastAll(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, int layerMask, bool includeTrigger = false)
         {
             var fixedPointRay = new FixedPointRay(origin, direct);
             var colliders = new List<FixedPointCollider>();
@@ -110,6 +110,10 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -137,6 +141,10 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
                         if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
                         {
                             continue;
@@ -161,6 +169,10 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
                         if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
                         {
                             continue;
@@ -182,6 +194,10 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -212,7 +228,7 @@ namespace BlueNoah.PhysicsEngine
             return colliders;
         }
         
-        public bool Raycast(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, out FixedPointRaycastHit fixedPointRaycastHit, int layerMask)
+        public bool Raycast(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length, out FixedPointRaycastHit fixedPointRaycastHit, int layerMask, bool includeTrigger = false)
         {
             var fixedPointRay = new FixedPointRay(origin, direct);
             FixedPointCollider collider = null;
@@ -240,7 +256,11 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
-                        if (!item.enabled || item.isTrigger)
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -271,7 +291,11 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
-                        if (!item.enabled || item.isTrigger)
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -331,6 +355,10 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
                         if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
                         {
                             continue;
@@ -359,6 +387,10 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -403,7 +435,7 @@ namespace BlueNoah.PhysicsEngine
             }
         }
 
-        public int RaycastNonAlloc(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length,  FixedPointRaycastHit[] fixedPointRaycastHit, int layerMask)
+        public int RaycastNonAlloc(FixedPointVector3 origin, FixedPointVector3 direct, FixedPoint64 length,  FixedPointRaycastHit[] fixedPointRaycastHit, int layerMask, bool includeTrigger = false)
         {
             var fixedPointRay = new FixedPointRay(origin, direct);
             int count = 0;
@@ -426,7 +458,11 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
-                        if (!item.enabled || item.isTrigger)
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -451,7 +487,11 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
-                        if (!item.enabled || item.isTrigger)
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -487,6 +527,10 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
                         if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
                         {
                             continue;
@@ -509,6 +553,10 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -629,6 +677,10 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
                         if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
                         {
                             continue;
@@ -651,6 +703,10 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -767,6 +823,10 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
                         if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
                         {
                             continue;
@@ -789,6 +849,10 @@ namespace BlueNoah.PhysicsEngine
                             continue;
                         }
                         if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -965,7 +1029,7 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
-                        if (!item.enabled || item.isTrigger)
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }
@@ -993,7 +1057,7 @@ namespace BlueNoah.PhysicsEngine
                         {
                             continue;
                         }
-                        if (!item.enabled || item.isTrigger)
+                        if (item.isTrigger && !includeTrigger)
                         {
                             continue;
                         }

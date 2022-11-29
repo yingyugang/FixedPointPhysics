@@ -43,7 +43,7 @@ namespace BlueNoah.PhysicsEngine
 
         public virtual void FindCollisionFeatures(FixedPointRigidbody ra,FixedPointRigidbody rb)
         {
-            FixedPointCollision result;
+            
         }
 
         public virtual void ApplyImpulse(FixedPointRigidbody ra,FixedPointRigidbody rb,FixedPointCollision collision,int C)
