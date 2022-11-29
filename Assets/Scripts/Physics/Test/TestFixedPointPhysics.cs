@@ -58,10 +58,10 @@ namespace BlueNoah.PhysicsEngine
             // var intersect = FixedPointIntersection.RayIntercect(Camera.main.transform.position, forward * 10000, target.bounds.min, target.bounds.max, out normal);
             var intersect = FixedPointIntersection.RaycastAABBFloat(target.transform.position + Vector3.up * 1000, -Vector3.up * 10000, target.bounds.min, target.bounds.max, out normal);
             Debug.Log(intersect);
-            FixedPointVector3 normalFixedPoint;
-            var intersectFixed = FixedPointIntersection.IntersectionWithRayAndAABBFixedPoint(new FixedPointVector3(Camera.main.transform.position),new FixedPointVector3(forward) * 10000, new FixedPointVector3(targetAABB.bounds.min), new FixedPointVector3(targetAABB.bounds.max), out normalFixedPoint);
+            FixedPointCollision normalFixedPoint;
+            var intersectFixed = FixedPointIntersection.IntersectWithRayAndAABBFixedPoint(new FixedPointVector3(Camera.main.transform.position),new FixedPointVector3(forward) * 10000, new FixedPointVector3(targetAABB.bounds.min), new FixedPointVector3(targetAABB.bounds.max), out normalFixedPoint);
             Debug.Log(intersectFixed);
-            Debug.Log(normalFixedPoint);
+            Debug.Log(normalFixedPoint.normal);
         }
 
         void Intersection1(EventData evt)
@@ -82,10 +82,10 @@ namespace BlueNoah.PhysicsEngine
             var intersect = FixedPointIntersection.RaycastAABBFloat(target.transform.position + Vector3.up * 1000, -Vector3.up * 10000, target.bounds.min, target.bounds.max, out normal);
             Debug.Log(intersect);
 
-            FixedPointVector3 normalFixedPoint;
-            var intersectFixed = FixedPointIntersection.IntersectionWithRayAndAABBFixedPoint(new FixedPointVector3(target.transform.position + Vector3.up * 1000), FixedPointVector3.up * -10000,new FixedPointVector3 (target.bounds.min) , new FixedPointVector3(target.bounds.max) , out normalFixedPoint);
+            FixedPointCollision normalFixedPoint;
+            var intersectFixed = FixedPointIntersection.IntersectWithRayAndAABBFixedPoint(new FixedPointVector3(target.transform.position + Vector3.up * 1000), FixedPointVector3.up * -10000,new FixedPointVector3 (target.bounds.min) , new FixedPointVector3(target.bounds.max) , out normalFixedPoint);
             Debug.Log(intersectFixed);
-            Debug.Log(normalFixedPoint);
+            Debug.Log(normalFixedPoint.normal);
         }
 
         void IntersectionRayPlane(EventData evt)

@@ -3,19 +3,22 @@ using UnityEngine;
 
 namespace BlueNoah.PhysicsEngine
 {
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public class FixedPointSphereColliderPresenter : FixedPointColliderPresenter
     {
         public FixedPointSphereCollider fixedPointSphereCollider { get; private set; }
+
+        [SerializeField]
+        int radiusInt;
+
+        /*
         public FixedPointRigidbody fixedPointRigidbody { get; private set; }
 
         [SerializeField]
         int friction = 10;
         [SerializeField]
         bool useRigidbody;
-        [SerializeField]
-        int radiusInt;
-
+        */
 
         FixedPointTransform fixedPointTransform;
         private void Awake()
@@ -30,12 +33,13 @@ namespace BlueNoah.PhysicsEngine
             fixedPointSphereCollider.actorPresenter = gameObject;
             colliderType = fixedPointSphereCollider.colliderType;
             fixedPointTransform.SetFixedPointCollider(fixedPointSphereCollider);
+            /*
             if (useRigidbody)
             {
                 fixedPointRigidbody = new FixedPointRigidbody(fixedPointSphereCollider, fixedPointTransform);
                 fixedPointRigidbody.friction = new FixedPoint64(friction) / 1000;
                 fixedPointRigidbody.force = new FixedPointVector3(5, 0, 0);
-            }
+            }*/
         }
         void OnTransfered()
         {
@@ -54,10 +58,10 @@ namespace BlueNoah.PhysicsEngine
         {
             if (fixedPointSphereCollider != null)
             {
-                Gizmos.color = Color.green;
+                Gizmos.color = Color.blue;
                 if (Application.isPlaying)
                 {
-                    Gizmos.DrawWireSphere(fixedPointSphereCollider.fixedPointTransform.fixedPointPosition.ToVector3(), fixedPointSphereCollider.radius.AsFloat());
+                    Gizmos.DrawWireSphere(fixedPointSphereCollider.position.ToVector3(), fixedPointSphereCollider.radius.AsFloat());
                 }
                 else
                 {

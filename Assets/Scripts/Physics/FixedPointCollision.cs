@@ -6,8 +6,10 @@ namespace BlueNoah.PhysicsEngine
     {
         public bool hit;
         public FixedPointCollider collider;
-        public FixedPointVector3 point;
+        public FixedPointVector3 closestPoint;
+        public FixedPointVector3 contactPoint;
         public FixedPointVector3 normal;
         public FixedPoint64 t;
+        public FixedPoint64 depth;
     }
 }

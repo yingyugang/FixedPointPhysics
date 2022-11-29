@@ -8,22 +8,37 @@ namespace BlueNoah.PhysicsEngine
         static void CreateAABB()
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            GameObject.DestroyImmediate(go.GetComponent<Collider>());
             go.AddComponent<FixedPointAABBColliderPresenter>();
             go.name = "AABB";
+            if (Selection.activeGameObject)
+            {
+                go.transform.SetParent(Selection.activeGameObject.transform);
+            }
         }
         [MenuItem("GameObject/3D FixedPoint Object/OBB", priority = 2)]
         static void CreateOBB()
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            GameObject.DestroyImmediate(go.GetComponent<Collider>());
             go.AddComponent<FixedPointOBBColliderPresenter>();
             go.name = "OBB";
+            if (Selection.activeGameObject)
+            {
+                go.transform.SetParent(Selection.activeGameObject.transform);
+            }
         }
         [MenuItem("GameObject/3D FixedPoint Object/Sphere", priority = 3)]
         static void CreateSphere()
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            GameObject.DestroyImmediate(go.GetComponent<Collider>());
             go.AddComponent<FixedPointSphereColliderPresenter>();
             go.name = "Sphere";
+            if (Selection.activeGameObject)
+            {
+                go.transform.SetParent(Selection.activeGameObject.transform);
+            }
         }
         [MenuItem("GameObject/3D FixedPoint Object/Triangle", priority = 4)]
         static void CreateTriangle()
@@ -36,6 +51,10 @@ namespace BlueNoah.PhysicsEngine
             var triangle = go.AddComponent<FixedPointTriangleColliderPresenter>();
             go.transform.position = Vector3.zero;
             triangle.SetVertices(new Math.FixedPoint.FixedPointVector3(0,0,0), new Math.FixedPoint.FixedPointVector3(0, 10, 0), new Math.FixedPoint.FixedPointVector3(10, 10, 0));
+            if (Selection.activeGameObject)
+            {
+                go.transform.SetParent(Selection.activeGameObject.transform);
+            }
         }
     }
 }

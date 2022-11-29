@@ -2,16 +2,13 @@ using BlueNoah.Math.FixedPoint;
 using UnityEngine;
 namespace BlueNoah.PhysicsEngine
 {
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public class FixedPointTriangleColliderPresenter : FixedPointColliderPresenter
     {
         public FixedPointTriangleCollider fixedPointTriangleCollider { get; private set; }
-        [SerializeField]
-        Vector3Int vertexA;
-        [SerializeField]
-        Vector3Int vertexB;
-        [SerializeField]
-        Vector3Int vertexC;
+        public Vector3Int vertexA;
+        public Vector3Int vertexB;
+        public Vector3Int vertexC;
         [SerializeField]
         Vector3Int eulerInt;
 
@@ -39,11 +36,6 @@ namespace BlueNoah.PhysicsEngine
         {
             positionInt = new Vector3Int((int)(transform.position.x * 1000), (int)(transform.position.y * 1000), (int)(transform.position.z * 1000));
             eulerInt = new Vector3Int((int)(transform.eulerAngles.x * 1000), (int)(transform.eulerAngles.y * 1000), (int)(transform.eulerAngles.z * 1000));
-            if (fixedPointTriangleCollider != null && fixedPointTriangleCollider.fixedPointTransform != null)
-            {
-                var radian = new FixedPointVector3(eulerInt) / 1000 * FixedPoint64.Deg2Rad;
-                fixedPointTriangleCollider.fixedPointTransform.fixedPointMatrix = FixedPointMatrix.CreateFromYawPitchRoll(radian.y, radian.x, radian.z);
-            }
             UpdateMesh();
         }
 #endif
@@ -75,6 +67,26 @@ namespace BlueNoah.PhysicsEngine
                 mesh.vertices = vertices;
                 mesh.RecalculateNormals();
                 meshFilter.sharedMesh = mesh;
+            }
+        }
+        private void OnDrawGizmos()
+        {
+            if (fixedPointTriangleCollider != null)
+            {
+                Gizmos.color = Color.blue;
+                if (Application.isPlaying)
+                {
+                    Gizmos.DrawLine(fixedPointTriangleCollider.a.ToVector3(), fixedPointTriangleCollider.b.ToVector3());
+                    Gizmos.DrawLine(fixedPointTriangleCollider.b.ToVector3(), fixedPointTriangleCollider.c.ToVector3());
+                    Gizmos.DrawLine(fixedPointTriangleCollider.c.ToVector3(), fixedPointTriangleCollider.a.ToVector3());
+                }
+                else
+                {
+                    Gizmos.DrawLine((Vector3)vertexA / 1000, (Vector3)vertexB / 1000);
+                    Gizmos.DrawLine((Vector3)vertexB / 1000, (Vector3)vertexC / 1000);
+                    Gizmos.DrawLine((Vector3)vertexC / 1000, (Vector3)vertexA / 1000);
+                }
+                Gizmos.color = Color.white;
             }
         }
     }

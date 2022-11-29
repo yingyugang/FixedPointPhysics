@@ -1,18 +1,38 @@
 ﻿using BlueNoah.Math.FixedPoint;
-using PE.Grast.Battle;
-using UnityEngine;
 
 namespace BlueNoah.PhysicsEngine
 {
     public class FixedPointRigidbody
     {
-        public readonly FixedPointVector3 GravitationalAcceleration = new FixedPointVector3(0, -1, 0) * 9.8;
+        public readonly static FixedPointVector3 GravitationalAcceleration = new FixedPointVector3(0, -9.82, 0);
         public bool useGravity { get; set; } = true;
-        public FixedPointVector3 velocity { get; private set; }
-        public FixedPointVector3 force { get; set; }
+        FixedPoint64 _mass = 1;
+        public FixedPoint64 invMass = 1;
+        public FixedPoint64 mass {
+            get
+            {
+                return _mass;
+            }
+            set
+            {
+                _mass = value;
+                if (_mass == 0)
+                {
+                    invMass = 0;
+                }
+                else
+                {
+                    invMass = 1 / _mass;
+                }
+            }
+        } 
+        public FixedPointVector3 velocity;
+        public FixedPointVector3 force;//Sum of all forces;
+        public FixedPoint64 cor = 0.5;//Coefficient of restitution;
+        readonly FixedPoint64 damping = 0.98;
+
         public FixedPointSphereCollider collider { get; private set; }
         public FixedPointTransform transform { get; private set; }
-        public FixedPoint64 friction { get; set; }
         public int targetTargetMask { get; set; } = 1 << 0;
         public FixedPointRigidbody(FixedPointSphereCollider collider, FixedPointTransform transform)
         {
@@ -21,14 +41,70 @@ namespace BlueNoah.PhysicsEngine
             FixedPointPhysicsPresenter.Instance.AddRigidbody(this);
         }
 
-        public void OnUpdate()
+        public virtual void FindCollisionFeatures(FixedPointRigidbody ra,FixedPointRigidbody rb)
+        {
+            FixedPointCollision result;
+        }
+
+        public virtual void ApplyImpulse(FixedPointRigidbody ra,FixedPointRigidbody rb,FixedPointCollision collision,int C)
+        {
+            //Linear Velocity
+            var invMass1 = ra.invMass;
+            var invMass2 = rb.invMass;
+            var invMassSum = invMass1 + invMass2;
+            if (invMassSum == 0)
+            {
+                return;
+            }
+            //Relative velicuty
+            var relativeVel = rb.velocity - ra.velocity;
+            //Relative collision normal
+            var relativeNorm = collision.normal;
+            //Moving away from each other? Do nothing!
+            if (FixedPointVector3.Dot(relativeVel,relativeNorm) > 0)
+            {
+                return;
+            }
+            var e = FixedPointMath.Min(ra.cor,rb.cor);
+            var numerator = -(1 + e) * FixedPointVector3.Dot(relativeVel,relativeNorm);
+            var j = numerator / invMassSum;
+            var impulse = relativeNorm * j;
+            ra.velocity = ra.velocity - impulse * invMass1;
+            rb.velocity = rb.velocity - impulse * invMass2;
+        }
+
+        public void AddLinearImpulse(FixedPointVector3 impulse)
+        {
+            velocity += impulse;
+        }
+
+        public virtual void ApplyForces()
         {
             if (useGravity)
             {
-                if (FixedPointPhysicsPresenter.Instance.fixedPointOctree.IsOutOfBound(transform.fixedPointPosition))
-                {
-                    return;
-                }
+                force = GravitationalAcceleration * mass;
+            }
+        }
+
+        public virtual void SolveConstraints()
+        {
+
+        }
+
+        public void OnUpdate()
+        {
+            if (FixedPointPhysicsPresenter.Instance.fixedPointOctree.IsOutOfBound(transform.fixedPointPosition))
+            {
+                return;
+            }
+            var acceleration = force * invMass;
+            velocity = velocity + acceleration * FixedPointPhysicsPresenter.Instance.DeltaTime;
+            velocity = velocity * damping;
+            transform.fixedPointPosition += velocity * FixedPointPhysicsPresenter.Instance.DeltaTime;
+
+            /*
+            if (useGravity)
+            {
                 //s=V0*t + a*t*t/2
                 var deltaDistance = FixedPointPhysicsPresenter.Instance.DeltaTime * FixedPointPhysicsPresenter.Instance.DeltaTime * (GravitationalAcceleration + force);
                 var prodict = velocity * FixedPointPhysicsPresenter.Instance.DeltaTime + deltaDistance + transform.fixedPointPosition ;
@@ -49,8 +125,8 @@ namespace BlueNoah.PhysicsEngine
                         else if (item.colliderType == ColliderType.Sphere)
                         {
                             var sphere = (FixedPointSphereCollider)item;
-                            var normal = (sphere.fixedPointTransform.fixedPointPosition - prodict).normalized;
-                            var penetration = (collider.radius + sphere.radius) - (prodict - sphere.fixedPointTransform.fixedPointPosition).magnitude;
+                            var normal = (sphere.position - prodict).normalized;
+                            var penetration = (collider.radius + sphere.radius) - (prodict - sphere.position).magnitude;
                             prodict -= normal * penetration;
                             friction += this.friction;
                         }
@@ -62,6 +138,8 @@ namespace BlueNoah.PhysicsEngine
                 velocity = d * FixedPointMath.Max(0, magnitude - friction);
                 transform.fixedPointPosition = prodict;
             }
+            */
+
         }
     }
 }

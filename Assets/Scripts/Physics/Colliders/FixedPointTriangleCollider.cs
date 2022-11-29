@@ -32,8 +32,8 @@ namespace BlueNoah.PhysicsEngine
             if (FixedPointPhysicsPresenter.Instance.fixedPointOctree != null)
             {
                 FixedPointPhysicsPresenter.Instance.fixedPointOctree.UpdateCollider(this);
-                min = fixedPointTransform.fixedPointPosition + localMin;
-                max = fixedPointTransform.fixedPointPosition + localMax;
+                min = position + localMin;
+                max = position + localMax;
             }
         }
     }

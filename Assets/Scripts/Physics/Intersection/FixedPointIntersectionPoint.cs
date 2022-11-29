@@ -17,7 +17,7 @@ namespace BlueNoah.PhysicsEngine
             {
                 return point;
             }
-            return  (point - position).normalized * radius;
+            return  (point - position).normalized * radius + position;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool PointOnPlane(FixedPointVector3 point, FixedPointPlane plane)
@@ -116,13 +116,31 @@ namespace BlueNoah.PhysicsEngine
             return distanceSq == 0;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool PointOnRay(FixedPointVector3 origin, FixedPointVector3 direct, FixedPointVector3 point)
+        {
+            if (point == origin)
+            {
+                return true;
+            }
+            var directP = (point - origin).normalized;
+            var dot = FixedPointVector3.Dot(direct,directP);
+            return dot == FixedPoint64.One;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static FixedPointVector3 ClostPointWithPointAndRay(FixedPointVector3 origin, FixedPointVector3 direct, FixedPointVector3 point)
+        {
+            var t = FixedPointVector3.Dot((point - origin), direct);
+            t = FixedPointMath.Max(t,0);
+            return origin + direct * t;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool PointInTriangle(FixedPointVector3 point, FixedPointTriangleCollider triangle)
         {
             if (!PointInAABB(point, triangle.min, triangle.max))
             {
                 return false;
             }
-            point = point - triangle.fixedPointTransform.fixedPointPosition;
+            point = point - triangle.position;
             var a = triangle.a - point;
             var b = triangle.b - point;
             var c = triangle.c - point;
@@ -142,11 +160,12 @@ namespace BlueNoah.PhysicsEngine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPointVector3 ClosestPointWithPointAndTriangle(FixedPointVector3 point, FixedPointTriangleCollider triangle)
         {
+            point = point - triangle.position;
             var plane = FromTriangle(triangle);
             var closest = ClosestPointWithPointAndPlane(point,plane);
             if (PointInTriangle(closest, triangle))
             {
-                return closest;
+                return closest + triangle.position; ;
             }
             var c1 = ClosestPointWithPointAndLine(triangle.a, triangle.b,point);
             var c2 = ClosestPointWithPointAndLine(triangle.b, triangle.c, point);
@@ -156,19 +175,19 @@ namespace BlueNoah.PhysicsEngine
             var magSq3 = (point - c3).sqrMagnitude;
             if (magSq1 < magSq2 && magSq1 < magSq3)
             {
-                return c1;
+                return c1 + triangle.position;
             }else if (magSq2 < magSq1 && magSq2 < magSq3)
             {
-                return c2;
+                return c2 + triangle.position; ;
             }
-            return c3;
+            return c3 + triangle.position; ;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static FixedPointPlane FromTriangle(FixedPointTriangleCollider triangle)
         {
             var plane = new FixedPointPlane();
             plane.normal = FixedPointVector3.Normalize(FixedPointVector3.Cross(triangle.b - triangle.a,triangle.c- triangle.a));
-            plane.distance = FixedPointVector3.Dot(plane.normal,triangle.a);
+            plane.distance = FixedPointVector3.Dot(plane.normal,triangle.a + triangle.position);
             return plane;
         }
     }

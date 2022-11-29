@@ -23,7 +23,7 @@ namespace BlueNoah.PhysicsEngine
                 if (FixedPointIntersection.IntersectWithRayAndTriangleFixedPoint(origin, new FixedPointVector3(direction), triangleCollider.fixedPointTriangleCollider, out fixedPointRaycastHit))
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    go.transform.position = fixedPointRaycastHit.point.ToVector3();
+                    go.transform.position = fixedPointRaycastHit.closestPoint.ToVector3();
                     Destroy(go, 3);
                 }
             }

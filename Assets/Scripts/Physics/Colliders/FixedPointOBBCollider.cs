@@ -23,8 +23,8 @@ namespace BlueNoah.PhysicsEngine
         public FixedPointOBBCollider(FixedPointTransform transform)
         {
             fixedPointTransform = transform;
-            min = fixedPointTransform.fixedPointPosition - halfSize;
-            max = fixedPointTransform.fixedPointPosition + halfSize;
+            min = position - halfSize;
+            max = position + halfSize;
             colliderType = ColliderType.OBB;
         }
         public FixedPointOBBCollider(FixedPointTransform transform, FixedPointVector3 size)
@@ -32,8 +32,8 @@ namespace BlueNoah.PhysicsEngine
             fixedPointTransform = transform;
             this.size = size;
             halfSize = size / 2;
-            min = fixedPointTransform.fixedPointPosition - halfSize;
-            max = fixedPointTransform.fixedPointPosition + halfSize;
+            min = position - halfSize;
+            max = position + halfSize;
             colliderType = ColliderType.OBB;
         }
         public override void UpdateCollider()
@@ -41,8 +41,8 @@ namespace BlueNoah.PhysicsEngine
             if (FixedPointPhysicsPresenter.Instance.fixedPointOctree != null)
             {
                 FixedPointPhysicsPresenter.Instance.fixedPointOctree.UpdateCollider(this);
-                min = fixedPointTransform.fixedPointPosition - halfSize;
-                max = fixedPointTransform.fixedPointPosition + halfSize;
+                min = position - halfSize;
+                max = position + halfSize;
             }
         }
     }

@@ -18,7 +18,6 @@ namespace BlueNoah.PhysicsEngine
 
         private void Update()
         {
-            var trans = fixedPointSphereColliderPresenter.fixedPointSphereCollider.fixedPointTransform.fixedPointPosition;
             var radius = fixedPointSphereColliderPresenter.fixedPointSphereCollider.radius;
             var colliders = FixedPointPhysicsPresenter.OverlapSphere(new FixedPointVector3(target.position), radius, 1 << 0);
             foreach (var item in colliders)

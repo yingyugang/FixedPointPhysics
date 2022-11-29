@@ -18,10 +18,10 @@ namespace BlueNoah.PhysicsEngine
                 Vector3 position = Camera.main.ScreenToWorldPoint(mousePosition);
                 var direction = (position - Camera.main.transform.position).normalized;
                 FixedPointCollision fixedPointRaycastHit;
-                if (FixedPointIntersection.IntersectionWithRayAndOBBFixedPoint(origin, new FixedPointVector3(direction), obb.fixedPointOBBCollider.fixedPointTransform.fixedPointPosition,  obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointMatrix, out fixedPointRaycastHit) > 0)
+                if (FixedPointIntersection.IntersectWithRayAndOBBFixedPoint(origin, new FixedPointVector3(direction), obb.fixedPointOBBCollider.position,  obb.fixedPointOBBCollider.halfSize, obb.fixedPointOBBCollider.fixedPointTransform.fixedPointMatrix, out fixedPointRaycastHit) > 0)
                 {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    go.transform.position = fixedPointRaycastHit.point.ToVector3();
+                    go.transform.position = fixedPointRaycastHit.closestPoint.ToVector3();
                     Destroy(go, 3);
                 }
                 this.origin = origin.ToVector3();

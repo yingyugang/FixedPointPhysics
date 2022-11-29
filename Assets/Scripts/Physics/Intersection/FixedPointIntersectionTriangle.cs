@@ -18,32 +18,49 @@ namespace BlueNoah.PhysicsEngine
             return interval;
         }
 
-        public static FixedPointCollision HitWithTriangleAndSphere(FixedPointVector3 point, FixedPoint64 radius, FixedPointTriangleCollider triangle)
+        public static FixedPointCollision HitWithTriangleAndSphere(FixedPointVector3 center, FixedPoint64 radius, FixedPointTriangleCollider triangle)
         {
             var hit = new FixedPointCollision();
             var plane = FromTriangle(triangle);
-            var closest = ClosestPointWithPointAndPlane(point, plane);
+            var closest = ClosestPointWithPointAndPlane(center, plane);
             if (PointInTriangle(closest, triangle))
             {
-                var magSq = (closest - point).sqrMagnitude;
+                var magSq = (closest - center).sqrMagnitude;
                 if (magSq <= radius * radius)
                 {
                     hit.hit = true;
-                    hit.point = closest;
-                    hit.normal = (point - closest).normalized;
+                    hit.closestPoint = closest;
+                    if (magSq == 0)
+                    {
+                        return hit;
+                    }
+                    hit.normal = (center -  closest).normalized;
+                    hit.normal = plane.normal;
+                }
+                else
+                {
+                    return hit;
                 }
             }
             else
             {
-                var closestPoint = ClosestPointWithPointAndTriangle(point, triangle);
-                var magSq = (closestPoint - point).sqrMagnitude;
+                var closestPoint = ClosestPointWithPointAndTriangle(center, triangle);
+                var magSq = (closestPoint - center).sqrMagnitude;
                 if (magSq <= radius * radius)
                 {
                     hit.hit = true;
-                    hit.point = closestPoint;
-                    hit.normal = (point - closestPoint).normalized;
+                    hit.closestPoint = closestPoint;
+                    hit.normal = (center - closestPoint).normalized;
+                }
+                else
+                {
+                    return hit;
                 }
             }
+            var outsidePoint = center - hit.normal * radius;
+            var distance = (hit.closestPoint - outsidePoint).magnitude;
+            hit.contactPoint = hit.closestPoint + (outsidePoint - hit.closestPoint) * 0.5;
+            hit.depth = distance * 0.5;
             return hit;
         }
     }

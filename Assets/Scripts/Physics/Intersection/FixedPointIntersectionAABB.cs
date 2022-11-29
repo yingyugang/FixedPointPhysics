@@ -101,7 +101,7 @@ namespace BlueNoah.PhysicsEngine
         public static FixedPointInterval GetInterval(FixedPointOBBCollider obb,FixedPointVector3 axis)
         {
             var vertex = new FixedPointVector3[8];
-            var c = obb.fixedPointTransform.fixedPointPosition;
+            var c = obb.position;
             var e = obb.halfSize;
             var a = new FixedPointVector3[] { 
                 new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M11, obb.fixedPointTransform.fixedPointMatrix.M12, obb.fixedPointTransform.fixedPointMatrix.M13), 

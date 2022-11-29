@@ -64,9 +64,8 @@ namespace BlueNoah.PhysicsEngine
         // Update is called once per frame
         void Update()
         {
-            sphere.transform.localScale = Vector3.one * radius.AsFloat() * 2;
-            sphere.transform.position = position.ToVector3();
-            var colliders = FixedPointPhysicsPresenter.OverlapSphere(position, radius);
+            position = new FixedPointVector3(sphere.transform.position);
+            var colliders = FixedPointPhysicsPresenter.OverlapSphere(position, sphere.transform.localScale.x / 2);
             hitGo.SetActive(false);
             foreach (var item in colliders)
             {
@@ -74,11 +73,11 @@ namespace BlueNoah.PhysicsEngine
                 {
                     case ColliderType.AABB:
                         { 
-                            var hit = FixedPointIntersection.HitWithSphereAndAABB(position, radius, item.min, item.max);
+                            var hit = FixedPointIntersection.IntersectWithSphereAndAABB(position, radius, item.min, item.max);
                             if (hit.hit)
                             {
                                 hitGo.SetActive(true);
-                                hitGo.transform.position = hit.point.ToVector3();
+                                hitGo.transform.position = hit.closestPoint.ToVector3();
                                 hitGo.transform.forward = hit.normal.ToVector3();
                             }
                         }
@@ -86,11 +85,11 @@ namespace BlueNoah.PhysicsEngine
                     case ColliderType.Sphere:
                         {
                             var sphere = (FixedPointSphereCollider)item;
-                            var hit = FixedPointIntersection.HitWithSphereAndSphere(position, radius, item.fixedPointTransform.fixedPointPosition, sphere.radius);
+                            var hit = FixedPointIntersection.IntersectWithSphereAndSphere(position, radius, item.position, sphere.radius);
                             if (hit.hit)
                             {
                                 hitGo.SetActive(true);
-                                hitGo.transform.position = hit.point.ToVector3();
+                                hitGo.transform.position = hit.closestPoint.ToVector3();
                                 hitGo.transform.forward = hit.normal.ToVector3();
                             }
                         }
@@ -98,11 +97,23 @@ namespace BlueNoah.PhysicsEngine
                     case ColliderType.OBB:
                         {
                             var obb = (FixedPointOBBCollider)item;
-                            var hit = FixedPointIntersection.HitWithSphereAndOBB(position, radius, item.fixedPointTransform.fixedPointPosition, obb.halfSize,obb.fixedPointTransform.fixedPointMatrix);
+                            var hit = FixedPointIntersection.IntersectWithSphereAndOBB(position, radius, item.position, obb.halfSize,obb.fixedPointTransform.fixedPointMatrix);
                             if (hit.hit)
                             {
                                 hitGo.SetActive(true);
-                                hitGo.transform.position = hit.point.ToVector3();
+                                hitGo.transform.position = hit.closestPoint.ToVector3();
+                                hitGo.transform.forward = hit.normal.ToVector3();
+                            }
+                        }
+                        break;
+                    case ColliderType.Triangle:
+                        {
+                            var obb = (FixedPointTriangleCollider)item;
+                            var hit = FixedPointIntersection.IntersectWithSphereAndTriangle(position, radius, obb);
+                            if (hit.hit)
+                            {
+                                hitGo.SetActive(true);
+                                hitGo.transform.position = hit.closestPoint.ToVector3();
                                 hitGo.transform.forward = hit.normal.ToVector3();
                             }
                         }

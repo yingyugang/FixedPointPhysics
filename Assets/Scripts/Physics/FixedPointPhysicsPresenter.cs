@@ -32,6 +32,11 @@ namespace BlueNoah.PhysicsEngine
             return Instance.fixedPointOctree.OverlapSphere(position, radius, layerMask, includeTrigger);
         }
 
+        public static List<FixedPointCollision> OverlaySphereCollision(FixedPointVector3 position, FixedPoint64 radius, int layerMask = -1, bool includeTrigger = false)
+        {
+            return Instance.fixedPointOctree.OverlaySphereCollision(position, radius, layerMask, includeTrigger);
+        }
+
         public static int OverlapSphereNonAlloc(FixedPointCollider[] colliders, FixedPointVector3 position, FixedPoint64 radius, int layerMask = 0)
         {
             return Instance.fixedPointOctree.OverlapSphereNonAlloc(colliders, position, radius, layerMask);
@@ -60,7 +65,15 @@ namespace BlueNoah.PhysicsEngine
             fixedPointOctree.UpdateColliders();
             foreach (var item in fixedPointRigidbodies)
             {
+                item.ApplyForces();
+            }
+            foreach (var item in fixedPointRigidbodies)
+            {
                 item.OnUpdate();
+            }
+            foreach (var item in fixedPointRigidbodies)
+            {
+                item.SolveConstraints();
             }
         }
 
@@ -88,7 +101,7 @@ namespace BlueNoah.PhysicsEngine
         }
         void DrawNode(FixedPointOctreeNode node)
         {
-            if (node.intersectedSphereColliders.Count > 0  || node.intersectedAABBColliders.Count > 0)
+            if (node.intersectedSphereColliders.Count > 0  || node.intersectedAABBColliders.Count > 0 || node.intersectedOBBColliders.Count > 0 || node.intersectedTriangleColliders.Count > 0)
                 Gizmos.color = Color.red;
             else
                 Gizmos.color = new Color(1,1,1,0.2f);

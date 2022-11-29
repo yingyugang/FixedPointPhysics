@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BlueNoah.PhysicsEngine
 {
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     public class FixedPointAABBColliderPresenter : FixedPointColliderPresenter
     {
         public FixedPointAABBCollider fixedPointAABBCollider { get; private set; }
@@ -35,10 +35,10 @@ namespace BlueNoah.PhysicsEngine
         {
             if (fixedPointAABBCollider!=null)
             {
-                Gizmos.color = Color.green;
+                Gizmos.color = Color.blue;
                 if (Application.isPlaying)
                 {
-                    Gizmos.DrawWireCube(fixedPointAABBCollider.fixedPointTransform.fixedPointPosition.ToVector3(), fixedPointAABBCollider.size.ToVector3());
+                    Gizmos.DrawWireCube(fixedPointAABBCollider.position.ToVector3(), fixedPointAABBCollider.size.ToVector3());
                 }
                 else
                 {
