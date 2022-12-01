@@ -6,7 +6,10 @@ namespace BlueNoah.PhysicsEngine
 {
     public class FixedPointPhysicsPresenter : SimpleSingleMonoBehaviour<FixedPointPhysicsPresenter>
     {
-        public List<FixedPointRigidbody> fixedPointRigidbodies { get; private set; } = new List<FixedPointRigidbody>();
+        public List<FixedPointRigidbody> fixedPointRigidbodies = new List<FixedPointRigidbody>();
+
+        public List<FixedPointCharacterController> actors = new List<FixedPointCharacterController>();
+
         public FixedPoint64 DeltaTime { get; set; } = 0.0333;
 
         public static FixedPointCollider RaycastUpDown(FixedPoint64 x, FixedPoint64 z, int layerMask = 0)
@@ -63,6 +66,15 @@ namespace BlueNoah.PhysicsEngine
         public void OnUpdate()
         {
             fixedPointOctree.UpdateColliders();
+
+            #region Update the actor
+            for (int i = 0; i < actors.Count; i++)
+            {
+                actors[i].OnUpdate();
+            }
+            UpdateCharacterConstraints();
+            #endregion
+
             foreach (var item in fixedPointRigidbodies)
             {
                 item.ApplyForces();
@@ -74,6 +86,42 @@ namespace BlueNoah.PhysicsEngine
             foreach (var item in fixedPointRigidbodies)
             {
                 item.SolveConstraints();
+            }
+        }
+
+        void UpdateCharacterConstraints()
+        {
+            //calculate the impulses between actor and static objects;
+            for (int i = 0; i < actors.Count; i++)
+            {
+                var actor = actors[i];
+                var colliders = OverlaySphereCollision(actor.fixedPointTransform.fixedPointPosition + new FixedPointVector3(0, actor.radius, 0), actor.radius);
+                foreach (var collision in colliders)
+                {
+                    if (collision.hit)
+                    {
+                        actor.AddImpulse(collision.normal * collision.depth * 2);
+                    }
+                }
+            }
+            //calculate the impluses between actors;
+            for (int i = 0; i < actors.Count; i++)
+            {
+                for (int j = i; j < actors.Count; j++)
+                {
+                    if (j == i)
+                    {
+                        continue;
+                    }
+                    var collision = FixedPointIntersection.IntersectWithSphereAndSphere(actors[i].fixedPointTransform.fixedPointPosition + new FixedPointVector3(0, actors[i].radius, 0), actors[i].radius, actors[j].fixedPointTransform.fixedPointPosition + new FixedPointVector3(0, actors[i].radius, 0), actors[j].radius);
+                    if (collision.hit)
+                    {
+                        var depth1 = collision.depth * 2 * actors[i].mass / (actors[i].mass + actors[j].mass);
+                        var depth2 = collision.depth * 2 * actors[j].mass / (actors[i].mass + actors[j].mass);
+                        actors[i].AddImpulse(collision.normal * depth1);
+                        actors[j].AddImpulse(-collision.normal * depth2);
+                    }
+                }
             }
         }
 
