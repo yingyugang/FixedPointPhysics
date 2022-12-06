@@ -34,7 +34,7 @@ namespace BlueNoah.PhysicsEngine
             get {
                 if (isMatrixDirty)
                 {
-                    _fixedPointMatrix = FixedPointMatrix.CreateFromYawPitchRoll(_fixedPointEulerAngles.y, _fixedPointEulerAngles.x, _fixedPointEulerAngles.z);
+                    _fixedPointMatrix = FixedPointMatrix.CreateFromYawPitchRoll(_fixedPointEulerAngles.y * FixedPoint64.Deg2Rad, _fixedPointEulerAngles.x * FixedPoint64.Deg2Rad, _fixedPointEulerAngles.z * FixedPoint64.Deg2Rad);
                     isMatrixDirty = false;
                 }
                 return _fixedPointMatrix;
@@ -43,6 +43,11 @@ namespace BlueNoah.PhysicsEngine
                 _fixedPointMatrix = value;
                 isEulerAnglesDirty = true;
                 _fixedPointEulerAngles = _fixedPointMatrix.eulerAngles;
+                onTransfered?.Invoke();
+                if (fixedPointCollider != null)
+                {
+                    fixedPointCollider.UpdateCollider();
+                }
             } 
         }
         bool isEulerAnglesDirty;
@@ -59,6 +64,11 @@ namespace BlueNoah.PhysicsEngine
             set { 
                 _fixedPointEulerAngles = value;
                 isMatrixDirty = true;
+                onTransfered?.Invoke();
+                if (fixedPointCollider != null)
+                {
+                    fixedPointCollider.UpdateCollider();
+                }
             }
         }
         public FixedPointVector3 fixedPointForward { 

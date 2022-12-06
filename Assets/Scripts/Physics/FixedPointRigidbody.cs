@@ -4,7 +4,6 @@ namespace BlueNoah.PhysicsEngine
 {
     public class FixedPointRigidbody
     {
-        public readonly static FixedPointVector3 GravitationalAcceleration = new FixedPointVector3(0, -9.82, 0);
         public bool useGravity { get; set; } = true;
         FixedPoint64 _mass = 1;
         public FixedPoint64 invMass = 1;
@@ -70,7 +69,7 @@ namespace BlueNoah.PhysicsEngine
             var j = numerator / invMassSum;
             var impulse = relativeNorm * j;
             ra.velocity = ra.velocity - impulse * invMass1;
-            rb.velocity = rb.velocity - impulse * invMass2;
+            rb.velocity = rb.velocity + impulse * invMass2;
         }
 
         public void AddLinearImpulse(FixedPointVector3 impulse)
@@ -82,7 +81,7 @@ namespace BlueNoah.PhysicsEngine
         {
             if (useGravity)
             {
-                force = GravitationalAcceleration * mass;
+                force = FixedPointPhysicsPresenter.GravitationalAcceleration * mass;
             }
         }
 

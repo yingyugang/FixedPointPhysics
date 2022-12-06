@@ -8,22 +8,33 @@ namespace BlueNoah.PhysicsEngine
         [HideInInspector]
         public FixedPointVector3 impulse;
         [HideInInspector]
+        public FixedPointVector3 constraint;
+        [HideInInspector]
         public FixedPointTransform fixedPointTransform;
+        [HideInInspector]
         public FixedPoint64 radius = 0.5;
+        [HideInInspector]
         public FixedPoint64 mass = 1;
+      
         FixedPointVector3 velocity;
+
+        FixedPointVector3 forces;
+
         private void Awake()
         {
             fixedPointTransform = new FixedPointTransform(null, name);
             fixedPointTransform.fixedPointPosition = new FixedPointVector3(transform.position);
             FixedPointPhysicsPresenter.Instance.actors.Add(this);
         }
-
         public void Move(FixedPointVector3 velocity)
         {
-            this.velocity = velocity;
+            AddImpulse(velocity);
         }
-
+        public void AddForce()
+        {
+            forces = FixedPointPhysicsPresenter.GravitationalAcceleration;
+            velocity += forces * FixedPointPhysicsPresenter.Instance.DeltaTime;
+        }
         public void AddImpulse(FixedPointVector3 additionalImpulse)
         {
             if (impulse == FixedPointVector3.zero)
@@ -49,12 +60,34 @@ namespace BlueNoah.PhysicsEngine
                 }
             }
         }
-
+        public void AddConstraints(FixedPointVector3 additionalConstraint)
+        {
+            if (constraint == FixedPointVector3.zero)
+            {
+                constraint = additionalConstraint;
+            }
+            else
+            {
+                var constraintNormal = constraint.normalized;
+                var magnitude = constraint.magnitude;
+                var dot = FixedPointVector3.Dot(additionalConstraint, constraintNormal);
+                if (dot > magnitude)
+                {
+                    constraint = additionalConstraint;
+                }
+                else if (dot > 0)
+                {
+                    constraint = constraint + additionalConstraint - constraintNormal * dot;
+                }
+                else
+                {
+                    constraint = constraint + additionalConstraint;
+                }
+            }
+        }
         public void OnUpdate()
         {
-            var finalOrientation = velocity + impulse;
-            impulse = FixedPointVector3.zero;
-            fixedPointTransform.fixedPointPosition += finalOrientation;
+            fixedPointTransform.fixedPointPosition += impulse;
             transform.position = fixedPointTransform.fixedPointPosition.ToVector3();
         }
     }

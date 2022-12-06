@@ -6,9 +6,12 @@ namespace BlueNoah.PhysicsEngine
 {
     public class FixedPointPhysicsPresenter : SimpleSingleMonoBehaviour<FixedPointPhysicsPresenter>
     {
+        [HideInInspector]
         public List<FixedPointRigidbody> fixedPointRigidbodies = new List<FixedPointRigidbody>();
-
+        [HideInInspector]
         public List<FixedPointCharacterController> actors = new List<FixedPointCharacterController>();
+
+        public readonly static FixedPointVector3 GravitationalAcceleration = new FixedPointVector3(0, -9.82, 0);
 
         public FixedPoint64 DeltaTime { get; set; } = 0.0333;
 
@@ -68,10 +71,8 @@ namespace BlueNoah.PhysicsEngine
             fixedPointOctree.UpdateColliders();
 
             #region Update the actor
-            for (int i = 0; i < actors.Count; i++)
-            {
-                actors[i].OnUpdate();
-            }
+            CharacterApplyForces();
+            CharacterOnUpdates();
             UpdateCharacterConstraints();
             #endregion
 
@@ -88,22 +89,13 @@ namespace BlueNoah.PhysicsEngine
                 item.SolveConstraints();
             }
         }
-
-        void UpdateCharacterConstraints()
+        void CharacterApplyForces()
         {
-            //calculate the impulses between actor and static objects;
             for (int i = 0; i < actors.Count; i++)
             {
-                var actor = actors[i];
-                var colliders = OverlaySphereCollision(actor.fixedPointTransform.fixedPointPosition + new FixedPointVector3(0, actor.radius, 0), actor.radius);
-                foreach (var collision in colliders)
-                {
-                    if (collision.hit)
-                    {
-                        actor.AddImpulse(collision.normal * collision.depth * 2);
-                    }
-                }
+                actors[i].AddForce();
             }
+
             //calculate the impluses between actors;
             for (int i = 0; i < actors.Count; i++)
             {
@@ -122,6 +114,31 @@ namespace BlueNoah.PhysicsEngine
                         actors[j].AddImpulse(-collision.normal * depth2);
                     }
                 }
+            }
+        }
+        void CharacterOnUpdates()
+        {
+            for (int i = 0; i < actors.Count; i++)
+            {
+                actors[i].OnUpdate();
+            }
+        }
+        void UpdateCharacterConstraints()
+        {
+            //calculate the impulses between actor and static objects;
+            for (int i = 0; i < actors.Count; i++)
+            {
+                var actor = actors[i];
+                var colliders = OverlaySphereCollision(actor.fixedPointTransform.fixedPointPosition + new FixedPointVector3(0, actor.radius, 0), actor.radius);
+                foreach (var collision in colliders)
+                {
+                    if (collision.hit)
+                    {
+                        actor.AddConstraints(collision.normal * collision.depth * 2);
+                    }
+                }
+                actor.fixedPointTransform.fixedPointPosition += actor.constraint;
+                actor.transform.position = actor.fixedPointTransform.fixedPointPosition.ToVector3();
             }
         }
 

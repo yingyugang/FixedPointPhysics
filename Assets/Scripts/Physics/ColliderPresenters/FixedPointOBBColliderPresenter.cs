@@ -44,10 +44,10 @@ namespace BlueNoah.PhysicsEngine
                 if (Application.isPlaying)  
                 {
                     var eulerAngles = fixedPointOBBCollider.fixedPointTransform.fixedPointMatrix.eulerAngles;
-                    //Gizmos.matrix = Matrix4x4.TRS(fixedPointOBBCollider.fixedPointTransform.fixedPointPosition.ToVector3(), Quaternion.Euler(eulerAngles.ToVector3()), fixedPointOBBCollider.size.ToVector3());
-                    //Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
-                    Gizmos.matrix = Matrix4x4.TRS((Vector3)positionInt / 1000f, Quaternion.Euler((Vector3)eulerInt / 1000f), (Vector3)sizeInt / 1000f);
+                    Gizmos.matrix = Matrix4x4.TRS(fixedPointOBBCollider.fixedPointTransform.fixedPointPosition.ToVector3(), Quaternion.Euler(eulerAngles.ToVector3()), fixedPointOBBCollider.size.ToVector3());
                     Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+                    //Gizmos.matrix = Matrix4x4.TRS((Vector3)positionInt / 1000f, Quaternion.Euler((Vector3)eulerInt / 1000f), (Vector3)sizeInt / 1000f);
+                    //Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
                 }
                 else
                 {
