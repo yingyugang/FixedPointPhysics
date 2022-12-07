@@ -15,8 +15,11 @@ namespace BlueNoah.PhysicsEngine
         public FixedPoint64 radius = 0.5;
         [HideInInspector]
         public FixedPoint64 mass = 1;
-      
-        FixedPointVector3 velocity;
+        [HideInInspector]
+        public FixedPoint64 friction = 0.1;
+
+        public FixedPointVector3 velocity;
+        public FixedPointVector3 currentForce;
 
         FixedPointVector3 forces;
 
@@ -30,10 +33,17 @@ namespace BlueNoah.PhysicsEngine
         {
             AddImpulse(velocity);
         }
+
+        public void AddForce(FixedPointVector3 force)
+        {
+            currentForce += force;
+        }
+
         public void AddForce()
         {
-            forces = FixedPointPhysicsPresenter.GravitationalAcceleration;
+            forces = currentForce + FixedPointPhysicsPresenter.GravitationalAcceleration;
             velocity += forces * FixedPointPhysicsPresenter.Instance.DeltaTime;
+            currentForce = FixedPointVector3.zero;
         }
         public void AddImpulse(FixedPointVector3 additionalImpulse)
         {
@@ -87,8 +97,25 @@ namespace BlueNoah.PhysicsEngine
         }
         public void OnUpdate()
         {
-            fixedPointTransform.fixedPointPosition += impulse;
+            fixedPointTransform.fixedPointPosition += impulse + velocity * FixedPointPhysicsPresenter.Instance.DeltaTime;
+            impulse = FixedPointVector3.zero;
             transform.position = fixedPointTransform.fixedPointPosition.ToVector3();
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (Application.isPlaying)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere((fixedPointTransform.fixedPointPosition + new FixedPointVector3(0, radius, 0)).ToVector3(), radius.AsFloat());
+                Gizmos.color = Color.white;
+            }
+            else
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(transform.position + new Vector3(0, radius.AsFloat(), 0), radius.AsFloat());
+                Gizmos.color = Color.white;
+            }
         }
     }
 }

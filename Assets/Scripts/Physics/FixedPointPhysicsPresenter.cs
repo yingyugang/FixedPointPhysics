@@ -95,7 +95,7 @@ namespace BlueNoah.PhysicsEngine
             {
                 actors[i].AddForce();
             }
-
+            
             //calculate the impluses between actors;
             for (int i = 0; i < actors.Count; i++)
             {
@@ -139,6 +139,15 @@ namespace BlueNoah.PhysicsEngine
                 }
                 actor.fixedPointTransform.fixedPointPosition += actor.constraint;
                 actor.transform.position = actor.fixedPointTransform.fixedPointPosition.ToVector3();
+                var constraintNormal = actor.constraint.normalized;
+                var dot = FixedPointVector3.Dot(actor.velocity, constraintNormal);
+                if (dot < 0 && actor.constraint != FixedPointVector3.zero)
+                {
+                    actor.velocity -= constraintNormal * dot;
+
+                    actor.velocity -= actor.velocity * actor.friction;
+                }
+                actor.constraint = FixedPointVector3.zero;
             }
         }
 
