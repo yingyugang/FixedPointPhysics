@@ -48,16 +48,16 @@ namespace BlueNoah.PhysicsEngine
             return true;
         }
         //GamePhysics Cookbook
-        public static bool IntersectWithAABBAndOBBFixedPoint(FixedPointVector3 min,FixedPointVector3 max, FixedPointOBBCollider obb)
+        public static bool IntersectWithAABBAndOBBFixedPoint(FixedPointVector3 min, FixedPointVector3 max, FixedPointVector3 position,FixedPointVector3 halfSize,FixedPointMatrix fixedPointMatrix)
         {
             var test = new FixedPointVector3[15];
             test[0] = new FixedPointVector3(1, 0, 0);
             test[1] = new FixedPointVector3(0, 1, 0);
             test[2] = new FixedPointVector3(0, 0, 1);
-            test[3] = new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M11, obb.fixedPointTransform.fixedPointMatrix.M12, obb.fixedPointTransform.fixedPointMatrix.M13);
-            test[4] = new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M21, obb.fixedPointTransform.fixedPointMatrix.M22, obb.fixedPointTransform.fixedPointMatrix.M23);
-            test[5] = new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M31, obb.fixedPointTransform.fixedPointMatrix.M32, obb.fixedPointTransform.fixedPointMatrix.M33);
-       
+            test[3] = new FixedPointVector3(fixedPointMatrix.M11, fixedPointMatrix.M12, fixedPointMatrix.M13);
+            test[4] = new FixedPointVector3(fixedPointMatrix.M21, fixedPointMatrix.M22, fixedPointMatrix.M23);
+            test[5] = new FixedPointVector3(fixedPointMatrix.M31, fixedPointMatrix.M32, fixedPointMatrix.M33);
+
             for (int i = 0; i < 3; ++i)
             {
                 test[6 + i * 3 + 0] = FixedPointVector3.Cross(test[i], test[0]);
@@ -66,12 +66,16 @@ namespace BlueNoah.PhysicsEngine
             }
             for (int i = 0; i < 15; ++i)
             {
-                if (!OverlapOnAxis(min,max,obb,test[i]))
+                if (!OverlapOnAxis(min, max, position, halfSize, fixedPointMatrix, test[i]))
                 {
                     return false;
                 }
             }
             return true;
+        }
+        public static bool IntersectWithAABBAndOBBFixedPoint(FixedPointVector3 min,FixedPointVector3 max, FixedPointOBBCollider obb)
+        {
+            return IntersectWithAABBAndOBBFixedPoint(min, max, obb.position,obb.halfSize,obb.fixedPointTransform.fixedPointMatrix);
         }
 
         public static FixedPointInterval GetInterval(FixedPointVector3 min, FixedPointVector3 max, FixedPointVector3 axis)
@@ -98,15 +102,15 @@ namespace BlueNoah.PhysicsEngine
             return result;
         }
 
-        public static FixedPointInterval GetInterval(FixedPointOBBCollider obb,FixedPointVector3 axis)
+        public static FixedPointInterval GetInterval(FixedPointVector3 position, FixedPointVector3 halfSize, FixedPointMatrix fixedPointMatrix, FixedPointVector3 axis)
         {
             var vertex = new FixedPointVector3[8];
-            var c = obb.position;
-            var e = obb.halfSize;
+            var c = position;
+            var e = halfSize;
             var a = new FixedPointVector3[] { 
-                new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M11, obb.fixedPointTransform.fixedPointMatrix.M12, obb.fixedPointTransform.fixedPointMatrix.M13), 
-                new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M21, obb.fixedPointTransform.fixedPointMatrix.M22, obb.fixedPointTransform.fixedPointMatrix.M23), 
-                new FixedPointVector3(obb.fixedPointTransform.fixedPointMatrix.M31, obb.fixedPointTransform.fixedPointMatrix.M32, obb.fixedPointTransform.fixedPointMatrix.M33) 
+                new FixedPointVector3(fixedPointMatrix.M11, fixedPointMatrix.M12, fixedPointMatrix.M13), 
+                new FixedPointVector3(fixedPointMatrix.M21, fixedPointMatrix.M22, fixedPointMatrix.M23), 
+                new FixedPointVector3(fixedPointMatrix.M31, fixedPointMatrix.M32, fixedPointMatrix.M33) 
             };
             vertex[0] = c + a[0] * e.x + a[1] * e.y + a[2] * e.z;
             vertex[1] = c - a[0] * e.x + a[1] * e.y + a[2] * e.z;
@@ -127,10 +131,10 @@ namespace BlueNoah.PhysicsEngine
             return result;
         }
 
-        static bool OverlapOnAxis(FixedPointVector3 min, FixedPointVector3 max, FixedPointOBBCollider obb,FixedPointVector3 axis)
+        static bool OverlapOnAxis(FixedPointVector3 min, FixedPointVector3 max, FixedPointVector3 positon, FixedPointVector3 halfSize, FixedPointMatrix fixedPointMatrix, FixedPointVector3 axis)
         {
             var a = GetInterval(min,max,axis);
-            var b = GetInterval(obb, axis);
+            var b = GetInterval(positon, halfSize, fixedPointMatrix, axis);
             return ((b.min <= a.max) && (a.min <= b.max));
         }
     }
