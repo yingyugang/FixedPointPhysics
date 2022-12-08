@@ -1,4 +1,6 @@
 ﻿using BlueNoah.Math.FixedPoint;
+using UnityEngine;
+
 namespace BlueNoah.PhysicsEngine
 {
     public class FixedPointSphereCollider : FixedPointCollider
@@ -19,7 +21,7 @@ namespace BlueNoah.PhysicsEngine
 
         public override void UpdateCollider()
         {
-            if (FixedPointPhysicsPresenter.Instance.fixedPointOctree != null)
+            if (Application.isPlaying && FixedPointPhysicsPresenter.Instance.fixedPointOctree != null)
             {
                 FixedPointPhysicsPresenter.Instance.fixedPointOctree.UpdateCollider(this);
             }
