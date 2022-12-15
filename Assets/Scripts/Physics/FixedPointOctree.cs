@@ -593,6 +593,153 @@ namespace BlueNoah.PhysicsEngine
             return FixedPointVector3.Cross(ray.Dir,point - ray.Point).sqrMagnitude;
         }
 
+        public List<FixedPointCollision> OverlayBoxCollision(FixedPointVector3 position, FixedPointVector3 halfSize, FixedPointMatrix orientation, int layerMask = -1, bool includeTrigger = false)
+        {
+            var collisions = new List<FixedPointCollision>();
+            FixedPointCollision fixedPointCollision;
+            openList.AddRange(root.nodes);
+            castIndex++;
+            if (castIndex == int.MaxValue)
+            {
+                castIndex = 0;
+            }
+            while (openList.Count > openListIndex)
+            {
+                var node = openList[openListIndex];
+                openListIndex++;
+                if (node.nodes == null || node.nodes.Length <= 0)
+                {
+                    foreach (var item in node.intersectedSphereColliders)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
+                        if (layerMask != -1 && !GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
+                        {
+                            continue;
+                        }
+                        if (item.castIndex == castIndex)
+                        {
+                            continue;
+                        }
+                        item.castIndex = castIndex;
+                        fixedPointCollision = FixedPointIntersection.IntersectWithSphereAndOBB(item.position, item.radius, position, halfSize, orientation);
+                        if (fixedPointCollision.hit)
+                        {
+                            fixedPointCollision.normal = - fixedPointCollision.normal;
+                            collisions.Add(fixedPointCollision);
+                        }
+                    }
+                    /* Only affect to Sphere now.
+                    foreach (var item in node.intersectedAABBColliders)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
+                        if (layerMask != -1 && !GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
+                        {
+                            continue;
+                        }
+                        if (item.castIndex == castIndex)
+                        {
+                            continue;
+                        }
+                        item.castIndex = castIndex;
+                        fixedPointCollision = FixedPointIntersection.IntersectWithAABBAndOBBFixedPoint(item.min, item.max, position, halfSize, orientation);
+                        if (fixedPointCollision.hit)
+                        {
+                            collisions.Add(fixedPointCollision);
+                        }
+                    }
+                    foreach (var item in node.intersectedOBBColliders)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
+                        if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
+                        {
+                            continue;
+                        }
+                        if (item.castIndex == castIndex)
+                        {
+                            continue;
+                        }
+                        item.castIndex = castIndex;
+                        fixedPointCollision = FixedPointIntersection.IntersectWithSphereAndOBB(position, radius, item.position, item.halfSize, item.fixedPointTransform.fixedPointMatrix);
+                        if (fixedPointCollision.hit)
+                        {
+                            collisions.Add(fixedPointCollision);
+                        }
+                    }
+                    foreach (var item in node.intersectedTriangleColliders)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+                        if (!item.enabled)
+                        {
+                            continue;
+                        }
+                        if (item.isTrigger && !includeTrigger)
+                        {
+                            continue;
+                        }
+                        if (!GridLayerMask.ValidateLayerMask(layerMask, 1 << item.layer))
+                        {
+                            continue;
+                        }
+                        if (item.castIndex == castIndex)
+                        {
+                            continue;
+                        }
+                        item.castIndex = castIndex;
+                        fixedPointCollision = FixedPointIntersection.IntersectWithSphereAndTriangle(position, radius, item);
+                        if (fixedPointCollision.hit)
+                        {
+                            collisions.Add(fixedPointCollision);
+                        }
+                    }*/
+                    continue;
+                }
+                for (int i = 0; i < node.nodes.Length; i++)
+                {
+                    if (FixedPointIntersection.IntersectWithAABBAndOBBFixedPoint(node.nodes[i].min, node.nodes[i].max, position, halfSize, orientation))
+                    {
+                        openList.Add(node.nodes[i]);
+                    }
+                }
+            }
+            return collisions;
+        }
+
         public List<FixedPointCollision> OverlaySphereCollision(FixedPointVector3 position, FixedPoint64 radius, int layerMask = -1, bool includeTrigger = false)
         {
             var collisions = new List<FixedPointCollision>();

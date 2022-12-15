@@ -33,6 +33,11 @@ namespace BlueNoah.PhysicsEngine
             return Instance.fixedPointOctree.RaycastNonAlloc(origin, direct, length, fixedPointRaycastHits, layerMask);
         }
 
+        public static List<FixedPointCollision> OverlayBoxCollision(FixedPointVector3 position, FixedPointVector3 halfSize, FixedPointMatrix orientation, int layerMask = -1, bool includeTrigger = false)
+        {
+            return Instance.fixedPointOctree.OverlayBoxCollision(position, halfSize, orientation, layerMask, includeTrigger);
+        }
+
         public static List<FixedPointCollider> OverlapSphere(FixedPointVector3 position, FixedPoint64 radius, int layerMask = -1, bool includeTrigger = false)
         {
             return Instance.fixedPointOctree.OverlapSphere(position, radius, layerMask, includeTrigger);
