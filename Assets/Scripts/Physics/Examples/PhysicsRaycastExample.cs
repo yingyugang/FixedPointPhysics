@@ -14,7 +14,7 @@ namespace BlueNoah.PhysicsEngine
         GameObject rayEnd;
         FixedPointRaycastHit rayHit;
 
-
+        public int length = 30;
         // Update is called once per frame
         void Update()
         {
@@ -25,7 +25,7 @@ namespace BlueNoah.PhysicsEngine
                 Vector3 position = Camera.main.ScreenToWorldPoint(mousePosition);
                 var direction = (position - Camera.main.transform.position).normalized;
                 FixedPointRaycastHit fixedPointRaycastHit;
-                if (FixedPointPhysicsPresenter.Raycast(origin,new FixedPointVector3(direction) , 10000, out fixedPointRaycastHit, 0)) {
+                if (FixedPointPhysicsPresenter.Raycast(origin,new FixedPointVector3(direction) , length, out fixedPointRaycastHit, 0)) {
                     var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     go.transform.position = fixedPointRaycastHit.point.ToVector3();
                     StartCoroutine(_Destroy(go, fixedPointRaycastHit.normal.ToVector3()));
@@ -51,15 +51,17 @@ namespace BlueNoah.PhysicsEngine
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(origin, origin + direction * 100);
+            Gizmos.DrawLine(origin, origin + direction * length);
+            /*
             if (Application.isPlaying)
             {
                 if (FixedPointPhysicsPresenter.Raycast(new FixedPointVector3(rayStart.transform.position), new FixedPointVector3(rayEnd.transform.position - rayStart.transform.position).normalized, 10000, out rayHit, 0))
                 {
                     Gizmos.DrawSphere(rayHit.point.ToVector3(), 0.3f);
                 }
-                Gizmos.DrawLine(rayStart.transform.position, (rayEnd.transform.position - rayStart.transform.position).normalized * 1000);
+                Gizmos.DrawLine(rayStart.transform.position, (rayEnd.transform.position - rayStart.transform.position).normalized * length);
             }
+            */
         }
     }
 }

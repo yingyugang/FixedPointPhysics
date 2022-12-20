@@ -15,6 +15,7 @@ namespace BlueNoah.PhysicsEngine
         }
         public Action onTransfered { get; set; }
         FixedPointVector3 mPosition;
+        public bool isColliderDirty;
         public FixedPointVector3 fixedPointPosition {
             get {
                 return mPosition;
@@ -22,10 +23,7 @@ namespace BlueNoah.PhysicsEngine
             set {
                 mPosition = value;
                 onTransfered?.Invoke();
-                if (fixedPointCollider != null)
-                {
-                    fixedPointCollider.UpdateCollider();
-                }
+                isColliderDirty = true;
             }
         }
         bool isMatrixDirty;
@@ -44,10 +42,7 @@ namespace BlueNoah.PhysicsEngine
                 isEulerAnglesDirty = true;
                 _fixedPointEulerAngles = _fixedPointMatrix.eulerAngles;
                 onTransfered?.Invoke();
-                if (fixedPointCollider != null)
-                {
-                    fixedPointCollider.UpdateCollider();
-                }
+                isColliderDirty = true;
             } 
         }
         bool isEulerAnglesDirty;
@@ -65,10 +60,7 @@ namespace BlueNoah.PhysicsEngine
                 _fixedPointEulerAngles = value;
                 isMatrixDirty = true;
                 onTransfered?.Invoke();
-                if (fixedPointCollider != null)
-                {
-                    fixedPointCollider.UpdateCollider();
-                }
+                isColliderDirty = true;
             }
         }
         public FixedPointVector3 fixedPointForward { 

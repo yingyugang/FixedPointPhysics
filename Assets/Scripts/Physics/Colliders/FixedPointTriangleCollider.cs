@@ -26,6 +26,10 @@ namespace BlueNoah.PhysicsEngine
             localMin = FixedPointVector3.Min(a, FixedPointVector3.Min(b,c));
             localMax = FixedPointVector3.Max(a, FixedPointVector3.Max(b, c));
             colliderType = ColliderType.Triangle;
+            if (Application.isPlaying)
+            {
+                FixedPointPhysicsPresenter.Instance.fixedPointOctree.AddCollider(this);
+            }
         }
 
 

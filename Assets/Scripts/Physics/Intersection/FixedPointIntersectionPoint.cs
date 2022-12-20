@@ -37,11 +37,11 @@ namespace BlueNoah.PhysicsEngine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool PointInAABB(FixedPointVector3 point, FixedPointVector3 min, FixedPointVector3 max)
         {
-            if (point.x < min.x || point.y < min.y || point.y < min.y)
+            if (point.x < min.x || point.y < min.y || point.z < min.z)
             {
                 return false;
             }
-            if (point.x > max.x || point.y > max.y || point.y > max.y)
+            if (point.x > max.x || point.y > max.y || point.z > max.z)
             {
                 return false;
             }

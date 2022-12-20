@@ -12,7 +12,12 @@ namespace BlueNoah.PhysicsEngine
         public List<FixedPointCharacterController> actors = new List<FixedPointCharacterController>();
 
         public readonly static FixedPointVector3 GravitationalAcceleration = new FixedPointVector3(0, -9.82, 0);
-
+        public void Clear()
+        {
+            fixedPointRigidbodies.Clear();
+            actors.Clear();
+            fixedPointOctree.Reset();
+        }
         public FixedPoint64 DeltaTime { get; set; } = 0.0333;
 
         public static FixedPointCollider RaycastUpDown(FixedPoint64 x, FixedPoint64 z, int layerMask = 0)
@@ -168,15 +173,9 @@ namespace BlueNoah.PhysicsEngine
             }
             DrawNode(fixedPointOctree.root);
         }
-
         public void AddRigidbody(FixedPointRigidbody rigidbody)
         {
             fixedPointRigidbodies.Add(rigidbody); 
-        }
-        //TODO
-        public void RemoveRigidbody(FixedPointRigidbody rigidbody)
-        {
-
         }
         void DrawNode(FixedPointOctreeNode node)
         {

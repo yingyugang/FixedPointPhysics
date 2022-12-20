@@ -27,8 +27,9 @@ namespace BlueNoah.PhysicsEngine
         public HashSet<FixedPointTriangleCollider> intersectedTriangleColliders = new HashSet<FixedPointTriangleCollider>();
 
         public FixedPointAABB fixedPointAABB;
+        public int size;
 
-        public FixedPointOctreeNode(int exp, int halfSize, FixedPointVector3 pos)
+        public FixedPointOctreeNode(int exp, int halfSize, FixedPointVector3 pos,int size)
         {
             this.exp = exp;
             this.halfSize = halfSize;
@@ -42,6 +43,7 @@ namespace BlueNoah.PhysicsEngine
             min = new FixedPointVector3(minX, minY, minZ);
             max = new FixedPointVector3(maxX, maxY, maxZ);
             fixedPointAABB = new FixedPointAABB(min, max);
+            this.size = size;
         }
 
         public bool VerifyInside(FixedPointVector3 pos)

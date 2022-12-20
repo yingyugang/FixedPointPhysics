@@ -11,12 +11,21 @@ namespace BlueNoah.PhysicsEngine
         {
             fixedPointTransform = transform;
             colliderType = ColliderType.Sphere;
+            if (Application.isPlaying)
+            {
+                FixedPointPhysicsPresenter.Instance.fixedPointOctree.AddCollider(this);
+            }
         }
 
         public FixedPointSphereCollider(FixedPointTransform transform,FixedPoint64 radius)
         {
             fixedPointTransform = transform;
             this.radius = radius;
+            colliderType = ColliderType.Sphere;
+            if (Application.isPlaying)
+            {
+                FixedPointPhysicsPresenter.Instance.fixedPointOctree.AddCollider(this);
+            }
         }
 
         public override void UpdateCollider()

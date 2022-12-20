@@ -39,6 +39,10 @@ namespace BlueNoah.PhysicsEngine
             min = position - halfSize;
             max = position + halfSize;
             colliderType = ColliderType.AABB;
+            if (Application.isPlaying)
+            {
+                FixedPointPhysicsPresenter.Instance.fixedPointOctree.AddCollider(this);
+            }
         }
         public FixedPointAABBCollider(FixedPointTransform transform,FixedPointVector3 size)
         {
@@ -47,6 +51,11 @@ namespace BlueNoah.PhysicsEngine
             halfSize = size / 2;
             min = position - halfSize;
             max = position + halfSize;
+            colliderType = ColliderType.AABB;
+            if (Application.isPlaying)
+            {
+                FixedPointPhysicsPresenter.Instance.fixedPointOctree.AddCollider(this);
+            }
         }
         public override void UpdateCollider()
         {
